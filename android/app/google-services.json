@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "741192779605",
+    "project_id": "booking-system-efa25",
+    "storage_bucket": "booking-system-efa25.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741192779605:android:5a78cad7874314c99751dc",
+        "android_client_info": {
+          "package_name": "com.example.flutter_booking_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAUVQ_4jwmQT-MDs4x6YGtMD0gUhdjwEk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
