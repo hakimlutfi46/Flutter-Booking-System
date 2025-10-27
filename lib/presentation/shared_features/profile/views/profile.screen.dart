@@ -235,12 +235,12 @@ class ProfileScreen extends GetView<ProfileController> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.logout, color: Colors.red[700]),
+                            Icon(Icons.logout, color: AppColors.error),
                             const SizedBox(width: 12),
                             Text(
                               "Logout",
                               style: Get.textTheme.titleMedium?.copyWith(
-                                color: Colors.red[700],
+                                color: AppColors.error,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
