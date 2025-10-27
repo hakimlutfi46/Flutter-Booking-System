@@ -5,10 +5,8 @@ class Routes {
   }
   
   static const SPLASH = '/splash';
-  static const LOGIN = '/login';
-
-  static const PARENT_DASHBOARD = '/dashboard-parent';
-  
-  static const TUTOR_DASHBOARD = '/dashboard-tutor';
-
+  static const LOGIN = '/login'; 
+  static const REGISTER = '/register'; 
+  static const DASHBOARD = '/dashboard';
+  static const PROFILE = '/profile';
 }

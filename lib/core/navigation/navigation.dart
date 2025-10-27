@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/auth_guard.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/role_guard.dart';
-import 'package:flutter_booking_system/presentation/parent_features/dashboard/bindings/parent_dashboard.binding.dart';
-import 'package:flutter_booking_system/presentation/parent_features/dashboard/views/parent_dashboard.screen.dart';
+import 'package:flutter_booking_system/presentation/shared_features/dashboard/bindings/dashboard.binding.dart';
+import 'package:flutter_booking_system/presentation/shared_features/dashboard/views/dashboard.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/login/bindings/login.controller.binding.dart';
 import 'package:flutter_booking_system/presentation/shared_features/login/controller/login.controller.dart';
 import 'package:flutter_booking_system/presentation/shared_features/login/views/login.screen.dart';
+import 'package:flutter_booking_system/presentation/shared_features/profile/bindings/profile.binding.dart';
+import 'package:flutter_booking_system/presentation/shared_features/profile/views/profile.screen.dart';
+import 'package:flutter_booking_system/presentation/shared_features/register/bindings/register.binding.dart';
+import 'package:flutter_booking_system/presentation/shared_features/register/views/register.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/splash/bindings/splash.controller.binding.dart';
 import 'package:flutter_booking_system/presentation/shared_features/splash/splash.screen.dart';
-import 'package:flutter_booking_system/presentation/tutor_features/dashboard/bindings/tutor_dashboard.binding.dart';
-import 'package:flutter_booking_system/presentation/tutor_features/dashboard/views/tutor_dashboard.screen.dart';
 
 import 'package:get/get.dart';
 
@@ -45,25 +47,24 @@ class Nav {
       page: () => const LoginScreen(),
       binding: LoginControllerBinding(),
     ),
-
     GetPage(
-      name: Routes.PARENT_DASHBOARD,
-      page: () => ParentDashboardScreen(),
-      binding: ParentDashboardBinding(),
-      middlewares: [
-        AuthGuard(),
-        RoleGuard(['parent']),
-      ],
+      name: Routes.REGISTER,
+      page: () => const RegisterScreen(),
+      binding: RegsiterBiding(),
     ),
 
     GetPage(
-      name: Routes.TUTOR_DASHBOARD,
-      page: () => TutorDashboardScreen(),
-      binding: TutorDashboardBinding(),
-      middlewares: [
-        AuthGuard(),
-        RoleGuard(['tutor']),
-      ],
+      name: Routes.DASHBOARD,
+      page: () => DashboardScreen(),
+      binding: DashboardBinding(),
+      middlewares: [AuthGuard()],
+    ),
+
+    GetPage(
+      name: Routes.PROFILE,
+      page: () => ProfileScreen(),
+      binding: ProfileBinding(),
+      middlewares: [AuthGuard()],
     ),
   ];
 }

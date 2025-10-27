@@ -1,5 +1,3 @@
-// lib/presentation/global/auth_controller.dart
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_booking_system/core/data/models/user_model.dart';
@@ -10,9 +8,9 @@ import 'package:get/get_navigation/get_navigation.dart';
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  final Rxn<User> _firebaseUser = Rxn<User>(); 
-  final Rxn<UserModel> firestoreUser = Rxn<UserModel>(); 
+
+  final Rxn<User> _firebaseUser = Rxn<User>();
+  final Rxn<UserModel> firestoreUser = Rxn<UserModel>();
 
   User? get user => _firebaseUser.value;
 
@@ -28,13 +26,13 @@ class AuthController extends GetxController {
   void _handleAuthChanged(User? user) {
     if (user == null) {
       // User logout
-      firestoreUser.value = null; 
+      firestoreUser.value = null;
       Get.offAllNamed(Routes.LOGIN);
-    } else {      
+    } else {
       _redirectToDashboard(user.uid);
     }
   }
-  
+
   Future<void> loadFirestoreUser(String uid) async {
     // Hanya fetch jika datanya belum ada
     if (firestoreUser.value != null && firestoreUser.value!.uid == uid) return;
@@ -46,27 +44,18 @@ class AuthController extends GetxController {
       } else {
         throw Exception("User record not found in Firestore.");
       }
-    } catch (e) {      
+    } catch (e) {
       rethrow;
     }
   }
 
   Future<void> _redirectToDashboard(String uid) async {
-    try {      
+    try {
       await loadFirestoreUser(uid);
-      final role = firestoreUser.value?.role;
-      
-      switch (role) {
-        case 'tutor':
-          Get.offAllNamed(Routes.TUTOR_DASHBOARD);
-          break;
-        case 'parent':        
-        default:
-          Get.offAllNamed(Routes.PARENT_DASHBOARD);
-          break;
-      }
+
+      Get.offAllNamed(Routes.DASHBOARD);
     } catch (e) {
-      Get.snackbar("Error", "Gagal mengambil data user: ${e.toString()}");      
+      Get.snackbar("Error", "Gagal mengambil data user: ${e.toString()}");
       await logout();
     }
   }
@@ -99,16 +88,39 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> register(String email, String password, String role) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+    String role,
+  ) async {
     isLoading.value = true;
-    try {      
+    try {
+      // --- Simple, portable timezone fallback (no native plugin needed)
+      // Bisa diganti menjadi null jika kamu tidak ingin menyimpan timezone
+      final String timezone = DateTime.now().timeZoneName;
+
+      // 1) buat user di Firebase Auth
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
-      
+
+      // 2) jika berhasil, simpan record ke Firestore
       if (userCredential.user != null) {
         String uid = userCredential.user!.uid;
-        UserModel newUser = UserModel(uid: uid, email: email, role: role);        
-        await _firestore.collection('users').doc(uid).set(newUser.toJson());
+
+        UserModel newUser = UserModel(
+          uid: uid,
+          email: email,
+          role: role,
+          name: name,
+          timezone: timezone, // portable fallback
+        );
+
+        // toJson() di UserModel sudah menambahkan createdAt: FieldValue.serverTimestamp()
+        await _firestore
+            .collection('users')
+            .doc(uid)
+            .set(newUser.toJson(), SetOptions(merge: true));
       }
       // Redirect akan diurus otomatis oleh _handleAuthChanged
     } on FirebaseAuthException catch (e) {
@@ -127,6 +139,9 @@ class AuthController extends GetxController {
           errorMessage = "Terjadi kesalahan. Coba lagi nanti.";
       }
       Get.snackbar("Gagal Register", errorMessage);
+    } catch (e) {
+      // Tangkap error non-Firebase juga
+      Get.snackbar("Gagal Register", e.toString());
     } finally {
       isLoading.value = false;
     }

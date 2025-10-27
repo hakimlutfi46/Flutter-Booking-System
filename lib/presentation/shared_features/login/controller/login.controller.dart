@@ -10,6 +10,8 @@ class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  final isPasswordHidden = true.obs;
+
   String? validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Email tidak boleh kosong';
@@ -38,12 +40,4 @@ class LoginController extends GetxController {
     }
     authC.login(emailController.text, passwordController.text);
   }
-
-  // void register() {
-  //   final isValid = formKey.currentState?.validate() ?? false;
-  //   if (!isValid) {
-  //     return;
-  //   }
-  //   authC.register(emailController.text, passwordController.text);
-  // }
 }
