@@ -1,15 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/firebase_options.dart';
+import 'package:flutter_booking_system/infrastructure/theme/app_theme.dart';
 
 import 'package:get/get.dart';
-
+import 'presentation/global/auth_controller.dart';
 import 'infrastructure/navigation/navigation.dart';
 import 'infrastructure/navigation/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  Get.put(AuthController(), permanent: true);
+
   var initialRoute = await Routes.initialRoute;
   runApp(Main(initialRoute));
 }
@@ -24,6 +28,8 @@ class Main extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,
       getPages: Nav.routes,
+
+      theme: AppTheme.lightTheme,
     );
   }
 }
