@@ -11,15 +11,19 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   var initialRoute = await Routes.initialRoute;
-  runApp(Main(initialRoute));  
+  runApp(Main(initialRoute));
 }
 
 class Main extends StatelessWidget {
-  final String initialRoute;  
+  final String initialRoute;
   const Main(this.initialRoute, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(initialRoute: initialRoute, getPages: Nav.routes);    
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: initialRoute,
+      getPages: Nav.routes,
+    );
   }
 }
