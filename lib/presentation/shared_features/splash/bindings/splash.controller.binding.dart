@@ -1,4 +1,4 @@
-import 'package:flutter_booking_system/presentation/splash/controller/splash.controller.dart';
+import 'package:flutter_booking_system/presentation/shared_features/splash/controller/splash.controller.dart';
 import 'package:get/get.dart';
 
 class SplashControllerBinding extends Bindings {

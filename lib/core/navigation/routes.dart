@@ -3,9 +3,12 @@ class Routes {
     // TODO: implement method
     return SPLASH;
   }
-
-  static const HOME = '/home';
+  
   static const SPLASH = '/splash';
   static const LOGIN = '/login';
+
+  static const PARENT_DASHBOARD = '/dashboard-parent';
+  
+  static const TUTOR_DASHBOARD = '/dashboard-tutor';
 
 }

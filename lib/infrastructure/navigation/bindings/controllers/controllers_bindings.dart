@@ -1,1 +1,0 @@
-export 'package:flutter_booking_system/infrastructure/navigation/bindings/controllers/home.controller.binding.dart'; 

@@ -1,12 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/firebase_options.dart';
-import 'package:flutter_booking_system/infrastructure/theme/app_theme.dart';
+import 'package:flutter_booking_system/core/theme/app_theme.dart';
 
 import 'package:get/get.dart';
 import 'presentation/global/auth_controller.dart';
-import 'infrastructure/navigation/navigation.dart';
-import 'infrastructure/navigation/routes.dart';
+import 'core/navigation/navigation.dart';
+import 'core/navigation/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

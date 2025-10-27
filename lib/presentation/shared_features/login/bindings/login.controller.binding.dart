@@ -1,4 +1,4 @@
-import 'package:flutter_booking_system/presentation/login/controller/login.controller.dart';
+import 'package:flutter_booking_system/presentation/shared_features/login/controller/login.controller.dart';
 import 'package:get/get.dart';
 
 class LoginControllerBinding extends Bindings {

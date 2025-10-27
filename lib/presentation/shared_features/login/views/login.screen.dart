@@ -2,7 +2,7 @@
 
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'controller/login.controller.dart';
+import '../controller/login.controller.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});
@@ -45,18 +45,18 @@ class LoginScreen extends GetView<LoginController> {
                 ),
               ),
               const SizedBox(height: 10),
-              Obx(
-                () => TextButton(
-                  onPressed: () {
-                    controller.register();
-                  },
-                  child: Text(
-                    controller.authC.isLoading.isFalse
-                        ? "REGISTER"
-                        : "LOADING...",
-                  ),
-                ),
-              ),
+              // Obx(
+              //   () => TextButton(
+              //     onPressed: () {
+              //       controller.register();
+              //     },
+              //     child: Text(
+              //       controller.authC.isLoading.isFalse
+              //           ? "REGISTER"
+              //           : "LOADING...",
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
