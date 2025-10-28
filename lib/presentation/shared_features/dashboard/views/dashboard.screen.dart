@@ -4,8 +4,8 @@ import 'package:flutter_booking_system/presentation/tutor_features/avability/vie
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
 import 'package:flutter_booking_system/presentation/parent_features/my_bookings/views/my_bookings.screen.dart';
-import 'parent_home_tab.dart'; 
-import 'tutor_home_tab.dart'; 
+import 'parent_home_tab.dart';
+import 'tutor_home_tab.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
 
 class ProfileTab extends StatelessWidget {
@@ -27,7 +27,7 @@ class DashboardScreen extends GetView<DashboardController> {
 
   final List<Widget> tutorPages = const [
     TutorHomeTab(),
-    AvabilityScreen(),
+    AvailabilityScreen(),
     ProfileScreen(),
   ];
 

@@ -5,6 +5,7 @@ class AvailabilityModel {
   final String tutorId;
   final DateTime startUTC;
   final DateTime endUTC;
+  final int capacity;
   final String status;
 
   AvailabilityModel({
@@ -12,6 +13,7 @@ class AvailabilityModel {
     required this.tutorId,
     required this.startUTC,
     required this.endUTC,
+    this.capacity = 1,
     this.status = 'open',
   });
 
@@ -21,6 +23,7 @@ class AvailabilityModel {
     // Simpan sebagai Timestamp di Firestore
     'startUTC': Timestamp.fromDate(startUTC),
     'endUTC': Timestamp.fromDate(endUTC),
+    'capacity': capacity,
     'status': status,
   };
 
@@ -30,6 +33,7 @@ class AvailabilityModel {
         tutorId: json['tutorId'],
         startUTC: (json['startUTC'] as Timestamp).toDate(),
         endUTC: (json['endUTC'] as Timestamp).toDate(),
+        capacity: json['capacity'],
         status: json['status'],
       );
 }
