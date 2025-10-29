@@ -8,7 +8,7 @@ class Routes {
   static const LOGIN = '/login'; 
   static const REGISTER = '/register'; 
   static const DASHBOARD = '/dashboard';
-  static const PROFILE = '/profile';
+  // static const PROFILE = '/profile';
   static const SEARCH_TUTOR = '/search-tutor';
   static const TUTOR_DETAIL = '/tutor-detail';
 

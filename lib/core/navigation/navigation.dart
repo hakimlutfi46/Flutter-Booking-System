@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/auth_guard.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/role_guard.dart';
+import 'package:flutter_booking_system/presentation/parent_features/my_bookings/bindings/my_bookings.binding.dart';
+import 'package:flutter_booking_system/presentation/parent_features/my_bookings/views/my_bookings.screen.dart';
 import 'package:flutter_booking_system/presentation/parent_features/search_tutors/binding/search_tutor.binding.dart';
 import 'package:flutter_booking_system/presentation/parent_features/search_tutors/views/search_tutor.screen.dart';
 import 'package:flutter_booking_system/presentation/parent_features/tutor_detail/binding/tutor_detail.binding.dart';
@@ -63,13 +65,12 @@ class Nav {
       middlewares: [AuthGuard()],
     ),
 
-    GetPage(
-      name: Routes.PROFILE,
-      page: () => ProfileScreen(),
-      binding: ProfileBinding(),
-      middlewares: [AuthGuard()],
-    ),
-
+    // GetPage(
+    //   name: Routes.PROFILE,
+    //   page: () => ProfileScreen(),
+    //   binding: ProfileBinding(),
+    //   middlewares: [AuthGuard()],
+    // ),
     GetPage(
       name: Routes.SEARCH_TUTOR,
       page: () => SearchTutorScreen(),
