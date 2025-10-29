@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_booking_system/data/models/avability_model.dart';
 import 'package:flutter_booking_system/data/repository/tutor_repository.dart';
 import 'package:flutter_booking_system/presentation/widgets/dialog/app_confirmation.dart';
+import 'package:flutter_booking_system/presentation/widgets/snackbar/app_snackbar.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,11 @@ class AvabilityController extends GetxController {
           (data) => availabilityList.assignAll(data),
           onError: (error) {
             if (authC.firestoreUser.value?.role == 'tutor') {
-              Get.snackbar("Error", "Gagal memuat jadwal: ${error.toString()}");
+              AppSnackbar.show(
+                title: "Error",
+                message: "Gagal memuat jadwal : ${error.toString()}",
+                type: SnackbarType.error,
+              );
             }
             print("Firestore Stream Error: $error");
           },
@@ -77,13 +82,21 @@ class AvabilityController extends GetxController {
     if (selectedDate.value == null ||
         startTime.value == null ||
         endTime.value == null) {
-      Get.snackbar("Perhatian", "Semua kolom tanggal dan waktu harus diisi!");
+      AppSnackbar.show(
+        title: "Perhatian!",
+        message: "Semua kolom tanggal dan waktu harus diisi!",
+        type: SnackbarType.warning,
+      );
       return;
     }
 
     final tutorId = authC.user?.uid;
     if (tutorId == null) {
-      Get.snackbar("Error", "Sesi Anda telah berakhir. Silakan login kembali.");
+      AppSnackbar.show(
+        title: "Error",
+        message: "Sesi anda telah berakhir. Silahkan login kembali.",
+        type: SnackbarType.error,
+      );
       return;
     }
 
@@ -109,7 +122,11 @@ class AvabilityController extends GetxController {
       final endUTC = endLocal.toUtc();
 
       if (endUTC.isBefore(startUTC) || endUTC.isAtSameMomentAs(startUTC)) {
-        Get.snackbar("Gagal", "Waktu selesai harus setelah waktu mulai.");
+        AppSnackbar.show(
+          title: "Gagal",
+          message: "Waktu selesai harus setelah waktu mulai.",
+          type: SnackbarType.error,
+        );
         isLoading.value = false; // Hentikan loading jika validasi gagal
         return;
       }
@@ -125,22 +142,23 @@ class AvabilityController extends GetxController {
 
       await _repository.createAvailabilitySlot(tutorId, newSlot);
 
-      Get.snackbar(
-        "Sukses!",
-        "Slot jadwal berhasil ditambahkan.",
-        backgroundColor: Colors.green.shade600,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+      AppSnackbar.show(
+        title: "Berhasil",
+        message: "Slot jadwal berhasil ditambahkan.",
+        type: SnackbarType.success,
+        position: SnackPosition.BOTTOM,
       );
 
-      resetForm(); // Reset form setelah sukses
+      resetForm();
 
       await Future.delayed(const Duration(milliseconds: 1500));
       if (Get.isBottomSheetOpen ?? false) Get.back();
     } catch (e) {
-      Get.snackbar("Error", "Gagal menambahkan slot: ${e.toString()}");
+      AppSnackbar.show(
+        title: 'Error',
+        message: 'Gagal menambahkan slot: ${e.toString()}',
+        type: SnackbarType.error,
+      );
     } finally {
       isLoading.value = false;
     }
@@ -150,31 +168,29 @@ class AvabilityController extends GetxController {
   Future<void> removeSlot(String slotId) async {
     final tutorId = authC.user?.uid;
     if (tutorId == null) {
-      Get.snackbar("Error", "Sesi Anda telah berakhir.");
+      AppSnackbar.show(
+        title: "Error",
+        message: "Sesi anda telah berakhir. Silahkan login kembali.",
+        type: SnackbarType.error,
+      );
+
       throw Exception("User not logged in"); // Lempar error agar bisa ditangkap
     }
     try {
       await _repository.deleteAvailabilitySlot(tutorId, slotId);
-      Get.snackbar(
-        "Berhasil",
-        "Slot dihapus.",
-        backgroundColor: Colors.green.shade600,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+
+      AppSnackbar.show(
+        title: 'Success',
+        message: 'Slot dihapus',
+        type: SnackbarType.success,
       );
     } catch (e) {
-      Get.snackbar(
-        "Gagal",
-        "Gagal menghapus slot: ${e.toString()}",
-        backgroundColor: Colors.red.shade600,
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
+      AppSnackbar.show(
+        title: 'Error',
+        message: 'Gagal menghapus slot: ${e.toString()}',
+        type: SnackbarType.error,
       );
-      // Re-throw error agar dialog tahu gagal
+
       rethrow;
     }
   }
