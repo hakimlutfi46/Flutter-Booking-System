@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
 import 'package:flutter_booking_system/presentation/shared_features/profile/controllers/profile.controller.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
+import 'package:flutter_booking_system/presentation/widgets/snackbar/app_snackbar.dart';
 import 'package:get/get.dart';
 
 class ProfileScreen extends GetView<ProfileController> {
@@ -14,10 +15,11 @@ class ProfileScreen extends GetView<ProfileController> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Obx(() {
-        // Tampilkan loading jika data user belum ada
         if (controller.user == null) {
           return const LoadingSpinner();
         }
+
+        final user = controller.user!;
 
         return CustomScrollView(
           slivers: [
@@ -105,7 +107,7 @@ class ProfileScreen extends GetView<ProfileController> {
                 delegate: SliverChildListDelegate([
                   // Personal Information Section
                   Text(
-                    "Personal Information",
+                    "Informasi Personal",
                     style: Get.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -134,36 +136,54 @@ class ProfileScreen extends GetView<ProfileController> {
 
                   const SizedBox(height: 32),
 
-                  // Account Statistics (Optional - bisa disesuaikan)
-                  if (controller.user!.role == 'tutor') ...[
+                  if (user.role == 'tutor') ...[
                     Text(
-                      "Statistics",
+                      "Statistik Tutor",
                       style: Get.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildStatCard(
-                            icon: Icons.event_available,
-                            label: "Sessions",
-                            value: "24", // TODO: Dynamic data
-                            color: Colors.green,
+                    // Gunakan Obx untuk loading dan data statistik
+                    Obx(() {
+                      if (controller.isLoadingStats.value) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24.0),
+                            child: SizedBox(
+                              height: 24,
+                              width: 24,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.5,
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildStatCard(
-                            icon: Icons.star,
-                            label: "Rating",
-                            value: "4.8", // TODO: Dynamic data
-                            color: Colors.amber,
+                        );
+                      }
+                      // Tampilkan data statistik
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _buildStatCard(
+                              icon: Icons.event_available_outlined,
+                              label: "Sesi Selesai",
+                              value: controller.totalSessions.value.toString(),
+                              color: Colors.green.shade600,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildStatCard(
+                              icon: Icons.star_border_outlined,
+                              label: "Rating Tutor",
+                              value: controller.tutorRating.value
+                                  .toStringAsFixed(1),
+                              color: Colors.amber.shade700,
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
                     const SizedBox(height: 32),
                   ],
 
@@ -181,10 +201,11 @@ class ProfileScreen extends GetView<ProfileController> {
                     title: "Edit Profile",
                     subtitle: "Update your personal information",
                     onTap: () {
-                      Get.snackbar(
-                        "Coming Soon",
-                        "Edit profile feature will be available soon",
-                        snackPosition: SnackPosition.BOTTOM,
+                      AppSnackbar.show(
+                        title: "Coming Soon",
+                        message: "Edit profile feature will be available soon",
+                        type: SnackbarType.neutral,
+                        position: SnackPosition.TOP,
                       );
                     },
                   ),
@@ -195,10 +216,12 @@ class ProfileScreen extends GetView<ProfileController> {
                     title: "Change Password",
                     subtitle: "Update your account password",
                     onTap: () {
-                      Get.snackbar(
-                        "Coming Soon",
-                        "Change password feature will be available soon",
-                        snackPosition: SnackPosition.BOTTOM,
+                      AppSnackbar.show(
+                        title: "Coming Soon",
+                        message:
+                            "Change password feature will be available soon",
+                        type: SnackbarType.neutral,
+                        position: SnackPosition.TOP,
                       );
                     },
                   ),
@@ -209,10 +232,11 @@ class ProfileScreen extends GetView<ProfileController> {
                     title: "Notifications",
                     subtitle: "Manage notification preferences",
                     onTap: () {
-                      Get.snackbar(
-                        "Coming Soon",
-                        "Notification settings will be available soon",
-                        snackPosition: SnackPosition.BOTTOM,
+                      AppSnackbar.show(
+                        title: "Coming Soon",
+                        message: "Notification settings will be available soon",
+                        type: SnackbarType.neutral,
+                        position: SnackPosition.TOP,
                       );
                     },
                   ),

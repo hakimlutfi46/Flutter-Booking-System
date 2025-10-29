@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
+import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
+import 'package:flutter_booking_system/core/utils/formatter_utils.dart';
 
 class TutorHomeTab extends StatelessWidget {
   const TutorHomeTab({super.key});
@@ -19,13 +21,7 @@ class TutorHomeTab extends StatelessWidget {
             // Header Section
             SliverToBoxAdapter(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(32),
-                    bottomRight: Radius.circular(32),
-                  ),
-                ),
+                decoration: BoxDecoration(color: Colors.transparent),
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
                   child: Column(
@@ -59,36 +55,50 @@ class TutorHomeTab extends StatelessWidget {
                 offset: const Offset(0, -24),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.today,
-                          label: "Today",
-                          value: "5", // TODO: Dynamic data
-                          color: AppColors.secondary,
+                  child: Obx(() {
+                    final bool isLoading =
+                        dashboardController.isLoadingStats.value;
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.today_outlined,
+                            label: "Hari Ini",
+                            value:
+                                dashboardController
+                                    .todayConfirmedSessionsCount
+                                    .value
+                                    .toString(),
+                            color: AppColors.secondary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.date_range,
-                          label: "This Week",
-                          value: "12", // TODO: Dynamic data
-                          color: Colors.blue,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.date_range_outlined,
+                            label: "Minggu Ini",
+                            value:
+                                dashboardController
+                                    .thisWeekConfirmedSessionsCount
+                                    .value
+                                    .toString(),
+                            color: Colors.blue,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.star,
-                          label: "Rating",
-                          value: "4.8", // TODO: Dynamic data
-                          color: Colors.amber,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildStatCard(
+                            icon: Icons.star,
+                            label: "Rating",
+                            value:
+                                dashboardController.tutorRating.value
+                                    .toString(),
+                            color: Colors.amber,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
+                      ],
+                    );
+                  }),
                 ),
               ),
             ),
@@ -101,7 +111,7 @@ class TutorHomeTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Quick Access",
+                      "Akses Cepat",
                       style: Get.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -130,16 +140,6 @@ class TutorHomeTab extends StatelessWidget {
                         );
                       },
                     ),
-                    const SizedBox(height: 12),
-                    _buildQuickAccessCard(
-                      icon: Icons.access_time,
-                      iconColor: Colors.orange,
-                      title: "Manage Availability",
-                      subtitle: "Edit atau hapus jadwal yang sudah dibuat",
-                      onTap: () {
-                        dashboardController.changeTabIndex(1);
-                      },
-                    ),
                   ],
                 ),
               ),
@@ -147,27 +147,33 @@ class TutorHomeTab extends StatelessWidget {
 
             // Today's Schedule Section
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              padding: const EdgeInsets.fromLTRB(
+                24,
+                0,
+                24,
+                24,
+              ), // Padding section
               sliver: SliverToBoxAdapter(
                 child: Column(
+                  // Column untuk header dan list
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Header Section
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Today's Schedule",
+                          "Jadwal hari ini",
                           style: Get.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         TextButton(
                           onPressed: () {
-                            Get.snackbar(
-                              "Navigation",
-                              "View all sessions",
-                              snackPosition: SnackPosition.BOTTOM,
-                            );
+                            dashboardController.changeTabIndex(
+                              1,
+                            ); // Arahkan ke tab Sesi jika ada
+                            // Get.snackbar("Navigation", "View all sessions");
                           },
                           child: Text(
                             "View All",
@@ -180,26 +186,79 @@ class TutorHomeTab extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    _buildSessionCard(
-                      time: "10:00 AM",
-                      subject: "Mathematics",
-                      studentName: "John Doe",
-                      status: "upcoming",
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSessionCard(
-                      time: "02:00 PM",
-                      subject: "Physics",
-                      studentName: "Jane Smith",
-                      status: "upcoming",
-                    ),
-                    const SizedBox(height: 12),
-                    _buildSessionCard(
-                      time: "04:30 PM",
-                      subject: "Chemistry",
-                      studentName: "Mike Johnson",
-                      status: "upcoming",
-                    ),
+
+                    // Daftar Sesi (dalam Obx)
+                    Obx(() {
+                      // Handle loading state
+                      if (dashboardController.isLoadingTodaySessions.value) {
+                        return const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 32.0),
+                          child: LoadingSpinner(),
+                        );
+                      }
+                      // Handle empty state
+                      if (dashboardController.todayUpcomingSessions.isEmpty) {
+                        return Container(
+                          // Container untuk empty state
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 32,
+                            horizontal: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [BoxShadow(/* ... shadow ... */)],
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.calendar_month,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                "Tidak ada Sesi yang akan datang",
+                                style: Get.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      // Tampilkan daftar sesi jika ada data
+                      return Column(
+                        // Gunakan map untuk iterasi list dari controller
+                        children:
+                            dashboardController.todayUpcomingSessions.map((
+                              booking,
+                            ) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 12.0),
+                                child: _buildSessionCard(
+                                  // Ambil data dari 'booking' (BookingModel)
+                                  time: FormatterUtils.formatTimeOnly(
+                                    booking.startUTC,
+                                  ),
+                                  subject:
+                                      dashboardController
+                                          .tutorData
+                                          .value
+                                          ?.subject ??
+                                      'Unknown Subject',
+                                  studentName: booking.studentName,
+                                  status: 'upcoming',
+                                ),
+                              );
+                            }).toList(), // Konversi ke List<Widget>
+                      );
+                    }), // Akhir Obx
                   ],
                 ),
               ),
