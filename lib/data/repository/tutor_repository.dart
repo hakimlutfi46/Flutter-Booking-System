@@ -8,42 +8,43 @@ class TutorRepository {
   static const String _availabilityCollection = 'availability';
 
   // --- CREATE (Membuat Slot Jadwal Baru) ---
-  Future<void> createAvailabilitySlot(AvailabilityModel slot) async {
-    try {
-      // Dapatkan referensi dokumen baru
-      final docRef = _firestore
-          .collection(_availabilityCollection)
-          .doc(slot.uid);
+  Future<void> createAvailabilitySlot(
+    String tutorId,
+    AvailabilityModel slot,
+  ) async {
+    final docRef = _firestore
+        .collection('tutors')
+        .doc(tutorId)
+        .collection('availability')
+        .doc(slot.uid);
 
-      // Simpan data
-      await docRef.set(slot.toJson());
-    } catch (e) {
-      // Re-throw exception agar bisa ditangkap oleh Controller
-      throw Exception("Gagal membuat slot: ${e.toString()}");
-    }
+    await docRef.set(slot.toJson());
   }
 
   // --- READ (Membaca Jadwal Real-Time) ---
   Stream<List<AvailabilityModel>> getTutorAvailabilityStream(String tutorId) {
-    // Query: Ambil semua dokumen di koleksi 'availability'
-    // yang tutorId-nya sama dengan tutor yang login
     return _firestore
-        .collection(_availabilityCollection)
-        .where('tutorId', isEqualTo: tutorId)
+        .collection('tutors')
+        .doc(tutorId)
+        .collection('availability')
         .snapshots()
         .map(
           (query) =>
               query.docs
-                  // Konversi setiap dokumen menjadi AvailabilityModel
                   .map((doc) => AvailabilityModel.fromJson(doc.data()))
                   .toList(),
         );
   }
 
   // --- DELETE (Menghapus Slot) ---
-  Future<void> deleteAvailabilitySlot(String slotId) async {
+  Future<void> deleteAvailabilitySlot(String tutorId, String slotId) async {
     try {
-      await _firestore.collection(_availabilityCollection).doc(slotId).delete();
+      await _firestore
+          .collection('tutors')
+          .doc(tutorId)
+          .collection('availability')
+          .doc(slotId)
+          .delete();
     } catch (e) {
       throw Exception("Gagal menghapus slot: ${e.toString()}");
     }

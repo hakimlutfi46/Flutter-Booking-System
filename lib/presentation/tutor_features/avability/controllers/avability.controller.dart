@@ -21,7 +21,8 @@ class AvabilityController extends GetxController {
   Rx<TimeOfDay?> startTime = Rx<TimeOfDay?>(null);
   Rx<TimeOfDay?> endTime = Rx<TimeOfDay?>(null);
 
-  final isLoading = false.obs;
+  final isLoading = false.obs; // Digunakan untuk addSlot
+  final isDeleting = false.obs;
 
   // Variabel untuk menyimpan StreamSubscription
   StreamSubscription<List<AvailabilityModel>>? _availabilitySubscription;
@@ -29,66 +30,47 @@ class AvabilityController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // 2. Tambahkan listener ke status login Firebase Auth
-    // PERBAIKI: Berikan variabel Rxn<User> _firebaseUser ke 'ever'
     ever(authC.firebaseUser, _handleAuthChangesForStream);
-
-    // 3. Panggil listener sekali saat init untuk state awal
-    // (Menggunakan getter 'user' di sini tidak masalah)
     _handleAuthChangesForStream(authC.user);
   }
 
   @override
   void onClose() {
-    _cancelAvailabilityStream(); // 4. Panggil fungsi cancel di onClose
+    _cancelAvailabilityStream();
     super.onClose();
   }
 
-  // 5. Fungsi baru untuk menangani perubahan status login
-  // Parameter 'firebaseUser' di sini adalah nama lokal, tidak masalah
   void _handleAuthChangesForStream(User? firebaseUser) {
-    _cancelAvailabilityStream(); // Selalu batalkan stream lama dulu
-    // Cek jika user login DAN rolenya tutor
+    _cancelAvailabilityStream();
     if (firebaseUser != null && authC.firestoreUser.value?.role == 'tutor') {
-      // Mulai stream baru menggunakan UID user yang login
       fetchAvailabilityStream(firebaseUser.uid);
     } else {
-      // Jika logout atau bukan tutor, bersihkan list
       availabilityList.clear();
     }
   }
 
-  // 6. Fungsi untuk membatalkan stream (jika ada)
   void _cancelAvailabilityStream() {
     _availabilitySubscription?.cancel();
     _availabilitySubscription = null;
   }
 
-  // --- READ (Membaca Jadwal Real-Time) ---
-  // 7. Modifikasi: Terima tutorId sebagai parameter
+  // --- READ (Stream Firestore) ---
   void fetchAvailabilityStream(String tutorId) {
-    // Pastikan stream lama dibatalkan sebelum memulai yang baru
     _cancelAvailabilityStream();
-
-    // Simpan subscription saat listen
     _availabilitySubscription = _repository
         .getTutorAvailabilityStream(tutorId)
         .listen(
-          (data) {
-            availabilityList.value = data;
-          },
+          (data) => availabilityList.assignAll(data),
           onError: (error) {
-            // Tangani error di sini
-            // Hanya tampilkan snackbar jika user MASIH tutor
             if (authC.firestoreUser.value?.role == 'tutor') {
               Get.snackbar("Error", "Gagal memuat jadwal: ${error.toString()}");
             }
-            print("Firestore Stream Error: $error"); // Log error untuk debug
+            print("Firestore Stream Error: $error");
           },
         );
   }
 
-  // --- CREATE (Membuat Slot Baru) ---
+  // --- CREATE (Tambah Slot) ---
   Future<void> addSlot() async {
     // ... (kode addSlot tidak berubah) ...
     if (selectedDate.value == null ||
@@ -98,8 +80,6 @@ class AvabilityController extends GetxController {
       return;
     }
 
-    // Pastikan user masih login sebelum mencoba menambah slot
-    // PERBAIKI: Gunakan getter 'user' yang benar
     final tutorId = authC.user?.uid;
     if (tutorId == null) {
       Get.snackbar("Error", "Sesi Anda telah berakhir. Silakan login kembali.");
@@ -108,10 +88,7 @@ class AvabilityController extends GetxController {
 
     isLoading.value = true;
     try {
-      // final tutorId = authC.user!.uid; // Kita sudah cek null di atas
       final selectedDay = selectedDate.value!;
-
-      // LOGIKA KONVERSI WAKTU (SANGAT PENTING!)
       final startLocal = DateTime(
         selectedDay.year,
         selectedDay.month,
@@ -136,7 +113,6 @@ class AvabilityController extends GetxController {
         return;
       }
 
-      // BUAT INSTANCE MODEL BARU (DENGAN CAPACITY)
       final newSlot = AvailabilityModel(
         uid: _uuid.v4(), // Buat ID unik dengan UUID
         tutorId: tutorId,
@@ -146,15 +122,22 @@ class AvabilityController extends GetxController {
         status: 'open',
       );
 
-      // KIRIM KE REPOSITORY
-      await _repository.createAvailabilitySlot(newSlot);
+      await _repository.createAvailabilitySlot(tutorId, newSlot);
 
       Get.snackbar(
         "Sukses!",
         "Slot jadwal berhasil ditambahkan.",
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green.shade600,
         colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
       );
+
+      resetForm(); // Reset form setelah sukses
+
+      await Future.delayed(const Duration(milliseconds: 1500));
+      if (Get.isBottomSheetOpen ?? false) Get.back();
     } catch (e) {
       Get.snackbar("Error", "Gagal menambahkan slot: ${e.toString()}");
     } finally {
@@ -162,29 +145,93 @@ class AvabilityController extends GetxController {
     }
   }
 
-  // --- DELETE (Menghapus Slot) ---
+  // --- DELETE (Hapus Slot) ---
   Future<void> removeSlot(String slotId) async {
-    // Tambahkan pengecekan login sebelum hapus
-    // PERBAIKI: Gunakan getter 'user' yang benar
-    if (authC.user == null) {
+    final tutorId = authC.user?.uid;
+    if (tutorId == null) {
       Get.snackbar("Error", "Sesi Anda telah berakhir.");
-      return;
+      throw Exception("User not logged in"); // Lempar error agar bisa ditangkap
     }
     try {
-      await _repository.deleteAvailabilitySlot(slotId);
-      Get.snackbar("Berhasil", "Slot dihapus.");
+      await _repository.deleteAvailabilitySlot(tutorId, slotId);
+      Get.snackbar(
+        "Berhasil",
+        "Slot dihapus.",
+        backgroundColor: Colors.green.shade600,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
     } catch (e) {
-      Get.snackbar("Gagal", "Gagal menghapus slot: ${e.toString()}");
+      Get.snackbar(
+        "Gagal",
+        "Gagal menghapus slot: ${e.toString()}",
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
+      // Re-throw error agar dialog tahu gagal
+      rethrow;
     }
   }
 
-  // Helper format waktu (tidak berubah)
+  // --- HELPER: Format waktu lokal ---
   String formatLocalTime(DateTime utcTime) {
-    // Pastikan kamu sudah install package intl
     final localTime = utcTime.toLocal();
-    return DateFormat(
-      'EEE, d MMM yyyy HH:mm',
-      'id_ID',
-    ).format(localTime); // Tambahkan locale ID
+    return DateFormat('EEE, d MMM yyyy HH:mm', 'id_ID').format(localTime);
+  }
+
+  // --- HELPER: Reset form input ---
+  void resetForm() {
+    selectedDate.value = null;
+    startTime.value = null;
+    endTime.value = null;
+  }
+
+  // --- HELPER: Konfirmasi hapus slot ---
+  Future<bool> showDeleteConfirmation(String slotUid) async {
+    final result = await Get.dialog<bool>(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Hapus Slot'),
+        content: const Text('Apakah kamu yakin ingin menghapus slot ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red.shade600,
+            ),
+            onPressed: () async {
+              // 1. TUTUP DIALOG KONFIRMASI
+              Get.back(result: true); // Kembalikan true
+
+              // 2. MULAI LOADING STATE
+              isDeleting.value = true;
+
+              // 3. LAKUKAN OPERASI HAPUS
+              try {
+                await removeSlot(slotUid);
+                // Snackbar sukses sudah ada di removeSlot
+              } catch (e) {
+                // Snackbar gagal sudah ada di removeSlot
+                print("Error during deletion: $e");
+              } finally {
+                // 4. HENTIKAN LOADING STATE (apapun hasilnya)
+                isDeleting.value = false;
+              }
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+      barrierDismissible: false,
+    );
+    return result ?? false;
   }
 }
