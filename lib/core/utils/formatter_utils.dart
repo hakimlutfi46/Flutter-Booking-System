@@ -22,4 +22,18 @@ class FormatterUtils {
   static String formatTimeRange(DateTime start, DateTime end) {
     return "${formatTimeOnly(start)} - ${formatTimeOnly(end)}";
   }
+
+  static String formatDateRelative(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final target = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final difference = target.difference(today).inDays;
+
+    if (difference == 0) return 'Hari ini';
+    if (difference == 1) return 'Besok';
+    if (difference == -1) return 'Kemarin';
+
+    // Jika bukan hari ini, besok, atau kemarin, tampilkan nama hari
+    return DateFormat('EEEE', 'id_ID').format(dateTime.toLocal());
+  }
 }

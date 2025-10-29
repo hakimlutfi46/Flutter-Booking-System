@@ -17,6 +17,8 @@ import 'package:flutter_booking_system/presentation/shared_features/register/bin
 import 'package:flutter_booking_system/presentation/shared_features/register/views/register.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/splash/bindings/splash.controller.binding.dart';
 import 'package:flutter_booking_system/presentation/shared_features/splash/splash.screen.dart';
+import 'package:flutter_booking_system/presentation/tutor_features/tutor_session/binding/tutor_sessions.binding.dart';
+import 'package:flutter_booking_system/presentation/tutor_features/tutor_session/views/tutor_sessions.screen.dart';
 
 import 'package:get/get.dart';
 
@@ -88,6 +90,16 @@ class Nav {
       middlewares: [
         AuthGuard(),
         RoleGuard(['parent']),
+      ],
+    ),
+
+    GetPage(
+      name: Routes.TUTOR_SESSIONS,
+      page: () => TutorSessionsScreen(),
+      binding: TutorSessionsBinding(),
+      middlewares: [
+        AuthGuard(),
+        RoleGuard(['tutor']),
       ],
     ),
   ];

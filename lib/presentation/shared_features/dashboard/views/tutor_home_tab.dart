@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
 import 'package:get/get.dart';
@@ -133,11 +134,7 @@ class TutorHomeTab extends StatelessWidget {
                       title: "Upcoming Sessions",
                       subtitle: "Lihat daftar sesi yang sudah dipesan",
                       onTap: () {
-                        Get.snackbar(
-                          "Navigation",
-                          "Navigating to Tutor Sessions",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
+                        Get.toNamed(Routes.TUTOR_SESSIONS);
                       },
                     ),
                   ],

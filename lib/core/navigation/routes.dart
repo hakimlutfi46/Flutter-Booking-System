@@ -11,5 +11,6 @@ class Routes {
   // static const PROFILE = '/profile';
   static const SEARCH_TUTOR = '/search-tutor';
   static const TUTOR_DETAIL = '/tutor-detail';
+  static const TUTOR_SESSIONS = '/tutor-sessions';
 
 }
