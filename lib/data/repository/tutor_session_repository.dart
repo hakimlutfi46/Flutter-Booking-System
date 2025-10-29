@@ -43,7 +43,6 @@ class TutorSessionsRepository {
     // Jalankan Transaction untuk keamanan data
     return _firestore
         .runTransaction((transaction) async {
-          // Baca dokumen booking untuk mendapatkan sessionId
           final bookingSnapshot = await transaction.get(bookingRef);
 
           if (!bookingSnapshot.exists || bookingSnapshot.data() == null) {
@@ -63,9 +62,13 @@ class TutorSessionsRepository {
           // 1. Update status booking
           transaction.update(bookingRef, {'status': newStatus});
 
-          // 2. Jika status baru adalah 'cancelled', buka kembali slot availability
+          // 2. LOGIKA BARU: Jika status BARU adalah 'cancelled' atau 'completed', buka slot/hapus slot.
           if (newStatus == 'cancelled') {
+            // Batalkan: Buka kembali slot availability
             transaction.update(availabilityRef, {'status': 'open'});
+          } else if (newStatus == 'completed') {
+            // Selesai: Hapus slot availability karena sudah tidak relevan
+            transaction.delete(availabilityRef); // <-- TAMBAHKAN DELETE INI
           }
         })
         .catchError((error) {

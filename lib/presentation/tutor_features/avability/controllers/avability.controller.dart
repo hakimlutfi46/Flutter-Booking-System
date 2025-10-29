@@ -59,15 +59,22 @@ class AvabilityController extends GetxController {
   // --- READ (Stream Firestore) ---
   void fetchAvailabilityStream(String tutorId) {
     _cancelAvailabilityStream();
+
+    // Tentukan waktu saat ini (UTC)
+    final now = DateTime.now().toUtc();
+
     _availabilitySubscription = _repository
         .getTutorAvailabilityStream(tutorId)
         .listen(
-          (data) => availabilityList.assignAll(data),
+          (data) {
+            availabilityList.value =
+                data.where((slot) => slot.endUTC.isAfter(now)).toList();
+          },
           onError: (error) {
             if (authC.firestoreUser.value?.role == 'tutor') {
               AppSnackbar.show(
                 title: "Error",
-                message: "Gagal memuat jadwal : ${error.toString()}",
+                message: "Gagal memuat jadwal: ${error.toString()}",
                 type: SnackbarType.error,
               );
             }
@@ -77,8 +84,7 @@ class AvabilityController extends GetxController {
   }
 
   // --- CREATE (Tambah Slot) ---
-  Future<void> addSlot() async {
-    // ... (kode addSlot tidak berubah) ...
+  Future<void> addSlot() async {    
     if (selectedDate.value == null ||
         startTime.value == null ||
         endTime.value == null) {

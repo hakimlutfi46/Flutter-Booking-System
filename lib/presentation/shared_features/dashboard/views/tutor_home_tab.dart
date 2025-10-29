@@ -205,7 +205,7 @@ class TutorHomeTab extends StatelessWidget {
                           decoration: BoxDecoration(
                             color: AppColors.background,
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [BoxShadow(/* ... shadow ... */)],
+                            
                           ),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,

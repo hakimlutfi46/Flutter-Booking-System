@@ -65,11 +65,11 @@ class MyBookingsController extends GetxController {
           },
           onError: (error) {
             print("Firestore Stream Error: $error");
-            AppSnackbar.show(
-              title: "Error",
-              message: "Gagal memuat daftar booking: ${error.toString()}",
-              type: SnackbarType.error,
-            );
+            // AppSnackbar.show(
+            //   title: "Error",
+            //   message: "Gagal memuat daftar booking: ${error.toString()}",
+            //   type: SnackbarType.error,
+            // );
             isLoading.value = false;
           },
         );

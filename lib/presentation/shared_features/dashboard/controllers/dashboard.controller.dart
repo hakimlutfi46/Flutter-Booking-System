@@ -179,7 +179,6 @@ class DashboardController extends GetxController {
     }
   }
 
-  // --- STREAM JADWAL HARI INI REALTIME ---
   void listenToTodaySessions() {
     final tutorId = user.value?.uid;
     if (tutorId == null) return;
@@ -196,26 +195,39 @@ class DashboardController extends GetxController {
     _todaySessionsSubscription = _firestore
         .collection('bookings')
         .where('tutorId', isEqualTo: tutorId)
-        .where('status', isEqualTo: 'confirmed') // Hanya yg confirmed
+        .where('status', isEqualTo: 'confirmed')
         .where(
           'startUTC',
           isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay),
         )
         .where('startUTC', isLessThanOrEqualTo: Timestamp.fromDate(endOfDay))
-        .orderBy('startUTC') // Urutkan
-        .snapshots() // Gunakan snapshots() untuk realtime
+        .orderBy('startUTC')
+        .snapshots()
         .listen(
           (snapshot) {
-            // Update list sesi hari ini
-            todayUpcomingSessions.value =
+            final now = DateTime.now().toUtc();
+
+            final allTodayBookings =
                 snapshot.docs
                     .map((doc) => BookingModel.fromJson(doc.data()))
                     .toList();
 
-            // Update count sesi hari ini secara realtime
-            todayConfirmedSessionsCount.value = todayUpcomingSessions.length;
+            // Sesi yang masih 'Upcoming' adalah yang WAKTU SELESAI-nya (endUTC) masih di masa depan
+            final upcoming =
+                allTodayBookings
+                    .where((booking) => booking.endUTC.isAfter(now))
+                    .toList();
 
-            isLoadingTodaySessions.value = false; // Selesai loading
+            // 3. Update list sesi hari ini
+            todayUpcomingSessions.value = upcoming;
+
+            // 4. Update count sesi hari ini secara realtime
+            todayConfirmedSessionsCount.value = upcoming.length;
+
+            // 5. Update count mingguan (asumsi sudah dipanggil fetchWeeklyStats)
+            // (Tidak perlu dilakukan di sini karena fetchWeeklyStats adalah one-time fetch)
+
+            isLoadingTodaySessions.value = false;
             // Set loading stats false jika fetchWeeklyStats sudah selesai
             if (!isLoadingStats.value) {
               // Cek status loading stats
@@ -225,10 +237,6 @@ class DashboardController extends GetxController {
           onError: (error) {
             print("Error listening to today sessions: $error");
             isLoadingTodaySessions.value = false;
-            // Hanya set false jika fetchWeeklyStats juga selesai
-            if (!isLoadingStats.value) {
-              isLoadingStats.value = false;
-            }
           },
         );
   }
