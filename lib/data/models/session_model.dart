@@ -1,4 +1,3 @@
-// lib/data/models/session_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SessionModel {
@@ -22,7 +21,7 @@ class SessionModel {
     'startUTC': Timestamp.fromDate(startUTC),
     'endUTC': Timestamp.fromDate(endUTC),
     'status': status,
-    'capacity': 1, // Sesuai assignment (1-to-1)
+    'capacity': 1, 
   };
 
   factory SessionModel.fromJson(Map<String, dynamic> json) => SessionModel(

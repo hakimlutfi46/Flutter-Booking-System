@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_booking_system/core/data/models/avability_model.dart';
+import 'package:flutter_booking_system/data/models/avability_model.dart';
 
 class TutorRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

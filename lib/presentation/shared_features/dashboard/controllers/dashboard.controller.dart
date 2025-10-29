@@ -1,5 +1,5 @@
 // lib/presentation/shared_features/dashboard/controllers/dashboard.controller.dart
-import 'package:flutter_booking_system/core/data/models/user_model.dart';
+import 'package:flutter_booking_system/data/models/user_model.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/global/auth_controller.dart';
 

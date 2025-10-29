@@ -1,5 +1,6 @@
 // lib/presentation/shared_features/dashboard/views/parent_home_tab.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
@@ -107,11 +108,7 @@ class ParentHomeTab extends StatelessWidget {
                       title: "Book a Session",
                       subtitle: "Cari tutor berdasarkan nama atau pelajaran",
                       onTap: () {
-                        Get.snackbar(
-                          "Navigation",
-                          "Navigating to Tutors List",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
+                        Get.toNamed(Routes.SEARCH_TUTOR);
                       },
                     ),
                     const SizedBox(height: 12),

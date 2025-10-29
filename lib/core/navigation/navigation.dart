@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/auth_guard.dart';
 import 'package:flutter_booking_system/core/navigation/middleware/role_guard.dart';
+import 'package:flutter_booking_system/presentation/parent_features/search_tutors/binding/search_tutor.binding.dart';
+import 'package:flutter_booking_system/presentation/parent_features/search_tutors/views/search_tutor.screen.dart';
+import 'package:flutter_booking_system/presentation/parent_features/tutor_detail/binding/tutor_detail.binding.dart';
+import 'package:flutter_booking_system/presentation/parent_features/tutor_detail/views/tutor_detail.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/bindings/dashboard.binding.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/views/dashboard.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/login/bindings/login.controller.binding.dart';
-import 'package:flutter_booking_system/presentation/shared_features/login/controller/login.controller.dart';
 import 'package:flutter_booking_system/presentation/shared_features/login/views/login.screen.dart';
 import 'package:flutter_booking_system/presentation/shared_features/profile/bindings/profile.binding.dart';
 import 'package:flutter_booking_system/presentation/shared_features/profile/views/profile.screen.dart';
@@ -65,6 +68,26 @@ class Nav {
       page: () => ProfileScreen(),
       binding: ProfileBinding(),
       middlewares: [AuthGuard()],
+    ),
+
+    GetPage(
+      name: Routes.SEARCH_TUTOR,
+      page: () => SearchTutorScreen(),
+      binding: SearchTutorBinding(),
+      middlewares: [
+        AuthGuard(),
+        RoleGuard(['parent']),
+      ],
+    ),
+
+    GetPage(
+      name: Routes.TUTOR_DETAIL,
+      page: () => TutorDetailScreen(),
+      binding: TutorDetailBinding(),
+      middlewares: [
+        AuthGuard(),
+        RoleGuard(['parent']),
+      ],
     ),
   ];
 }

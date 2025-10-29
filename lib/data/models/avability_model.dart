@@ -19,8 +19,7 @@ class AvailabilityModel {
 
   Map<String, dynamic> toJson() => {
     'uid': uid,
-    'tutorId': tutorId,
-    // Simpan sebagai Timestamp di Firestore
+    'tutorId': tutorId,    
     'startUTC': Timestamp.fromDate(startUTC),
     'endUTC': Timestamp.fromDate(endUTC),
     'capacity': capacity,

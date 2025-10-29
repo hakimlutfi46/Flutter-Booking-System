@@ -1,6 +1,6 @@
 // lib/presentation/shared_features/profile/controllers/profile.controller.dart
 import 'package:flutter/material.dart'; // Untuk dialog
-import 'package:flutter_booking_system/core/data/models/user_model.dart';
+import 'package:flutter_booking_system/data/models/user_model.dart';
 import 'package:flutter_booking_system/presentation/global/auth_controller.dart';
 import 'package:flutter_booking_system/presentation/widgets/primary_button.dart'; // Import tombol kita
 import 'package:get/get.dart';

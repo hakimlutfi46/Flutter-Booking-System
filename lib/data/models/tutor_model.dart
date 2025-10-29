@@ -1,12 +1,9 @@
-// lib/data/models/tutor_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class TutorModel {
-  final String uid; // Sama dengan UserModel.uid
-  final String name; // Diambil dari UserModel saat pertama kali dibuat
+  final String uid; 
+  final String name; 
   final String subject;
-  final String timezone; // Penting untuk konversi waktu
-  final double rating; // Contoh field tambahan
+  final String timezone;
+  final double rating; 
 
   TutorModel({
     required this.uid,
