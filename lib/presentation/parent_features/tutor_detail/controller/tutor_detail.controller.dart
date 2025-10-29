@@ -1,28 +1,30 @@
-import 'package:flutter_booking_system/data/models/avability_model.dart';
-import 'package:flutter_booking_system/data/models/tutor_model.dart';
 import 'package:flutter_booking_system/data/repository/booking_repository.dart';
 import 'package:flutter_booking_system/data/repository/parent_repository.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; // Untuk dialog
+
+// Import dependencies
+import 'package:flutter_booking_system/data/models/tutor_model.dart';
+import 'package:flutter_booking_system/data/models/avability_model.dart'; // Pastikan path benar
 import 'package:flutter_booking_system/presentation/global/auth_controller.dart';
 
 class TutorDetailController extends GetxController {
-  // Instance dependencies
+  // Instance dependencies (diambil dari binding)
+  final ParentRepository _parentRepository = Get.find<ParentRepository>();
   final BookingRepository _bookingRepository = Get.find<BookingRepository>();
-  final ParentRepository _repository =
-      Get.find<ParentRepository>(); // Dapatkan dari binding
   final AuthController authC = Get.find<AuthController>();
 
-  // Ambil tutorId dari argumen navigasi
+  // ID tutor diambil dari argumen navigasi
   late String tutorId;
 
   // State untuk menyimpan data tutor dan jadwal
   final Rxn<TutorModel> tutor = Rxn<TutorModel>();
   final RxList<AvailabilityModel> availabilitySlots = <AvailabilityModel>[].obs;
-  final Rxn<AvailabilityModel> selectedSlot =
-      Rxn<AvailabilityModel>(); // Slot yg dipilih user
+  // 1. HAPUS selectedSlot karena tidak dipakai lagi untuk FAB
+  // final Rxn<AvailabilityModel> selectedSlot = Rxn<AvailabilityModel>();
 
+  // State loading
   final isLoadingTutor = true.obs;
   final isLoadingSlots = true.obs;
   final isBooking = false.obs; // Untuk loading saat proses booking
@@ -30,19 +32,25 @@ class TutorDetailController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Ambil tutorId dari arguments
-    tutorId = Get.arguments as String;
-    // Panggil fungsi fetch data
-    fetchTutorDetails();
-    fetchAvailabilitySlots();
+    // Pastikan argumen tidak null sebelum di-assign
+    if (Get.arguments is String) {
+      tutorId = Get.arguments as String;
+      fetchTutorDetails();
+      fetchAvailabilitySlots();
+    } else {
+      Get.snackbar("Error", "ID Tutor tidak valid.");
+      Get.back();
+    }
   }
 
-  // --- FETCH DATA ---
-
+  // --- FETCH DATA (Tidak berubah) ---
   Future<void> fetchTutorDetails() async {
     try {
       isLoadingTutor.value = true;
-      tutor.value = await _repository.getTutorById(tutorId);
+      tutor.value = await _parentRepository.getTutorById(tutorId);
+      if (tutor.value == null) {
+        Get.snackbar("Error", "Data tutor tidak ditemukan.");
+      }
     } catch (e) {
       Get.snackbar("Error", "Gagal memuat detail tutor: ${e.toString()}");
     } finally {
@@ -52,46 +60,42 @@ class TutorDetailController extends GetxController {
 
   void fetchAvailabilitySlots() {
     isLoadingSlots.value = true;
-    // Gunakan stream dari repository
-    _repository
+    _parentRepository
         .getTutorAvailabilityStream(tutorId)
         .listen((data) {
-          availabilitySlots.value = data;
-          isLoadingSlots.value =
-              false; // Set loading false setelah data pertama masuk
+          availabilitySlots.value =
+              data.where((slot) => slot.status == 'open').toList();
+          isLoadingSlots.value = false;
         })
         .onError((error) {
-          Get.snackbar("Error", "Gagal memuat jadwal: ${error.toString()}");
+          if (authC.firestoreUser.value?.role == 'parent') {
+            Get.snackbar("Error", "Gagal memuat jadwal: ${error.toString()}");
+          }
+          print("Availability Stream Error (Tutor Detail): $error");
           isLoadingSlots.value = false;
         });
   }
 
-  // --- LOGIKA UI ---
-
-  // Fungsi saat user memilih slot
-  void selectSlot(AvailabilityModel slot) {
-    selectedSlot.value = slot;
-    _showBookingConfirmationDialog(); // Tampilkan dialog konfirmasi
-  }
-
-  // Helper untuk format waktu lokal
+  // --- LOGIKA UI (Helper format waktu tidak berubah) ---
   String formatLocalTimeRange(DateTime startUTC, DateTime endUTC) {
     final startLocal = startUTC.toLocal();
     final endLocal = endUTC.toLocal();
-    // Contoh format: Sen, 28 Okt 2025 • 10:00 - 11:00
-    return "${DateFormat('EEE, d MMM yyyy').format(startLocal)} • ${DateFormat('HH:mm').format(startLocal)} - ${DateFormat('HH:mm').format(endLocal)}";
+    return "${DateFormat('EEE, d MMM yyyy', 'id_ID').format(startLocal)} • ${DateFormat('HH:mm').format(startLocal)} - ${DateFormat('HH:mm').format(endLocal)}";
   }
 
   // --- LOGIKA BOOKING ---
 
-  void _showBookingConfirmationDialog() {
-    if (selectedSlot.value == null || tutor.value == null) return;
+  // 2. UBAH FUNGSI INI: Terima 'slot' sebagai parameter
+  void showBookingConfirmationDialog(AvailabilityModel slot) {
+    // Hapus pengecekan selectedSlot.value
+    if (tutor.value == null) return;
 
-    final slot = selectedSlot.value!;
+    // 'slot' sekarang didapat dari parameter
     final tutorData = tutor.value!;
 
     Get.dialog(
       AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Konfirmasi Booking Sesi'),
         content: Column(
           mainAxisSize: MainAxisSize.min, // Agar dialog tidak terlalu besar
@@ -115,56 +119,56 @@ class TutorDetailController extends GetxController {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 16),
+            Text(
+              'Pastikan waktu sudah sesuai dengan zona waktu Anda.',
+              style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
+            ),
           ],
         ),
+        actionsAlignment: MainAxisAlignment.spaceBetween,
         actions: [
           TextButton(
-            onPressed: () {
-              selectedSlot.value = null; // Batalkan pilihan
-              Get.back(); // Tutup dialog
-            },
+            onPressed: () => Get.back(), // Hanya tutup dialog
             child: const Text('Batal'),
           ),
-          // Tombol konfirmasi akan memicu proses booking
           ElevatedButton(
             onPressed: () {
-              Get.back(); // Tutup dialog dulu
-              processBooking(); // Panggil fungsi booking
+              Get.back(); // Tutup dialog konfirmasi
+              // 3. KIRIM 'slot' ke processBooking
+              processBooking(slot);
             },
             child: const Text('Ya, Konfirmasi'),
           ),
         ],
       ),
+      barrierDismissible: false,
     );
   }
 
-  // Fungsi untuk memproses booking (akan memanggil repository booking)
-  Future<void> processBooking() async {
-    // Validasi awal (pastikan slot, tutor, dan user ada)
-    if (selectedSlot.value == null ||
-        tutor.value == null ||
-        authC.user == null) {
+  // 4. UBAH FUNGSI INI: Terima 'slot' sebagai parameter
+  Future<void> processBooking(AvailabilityModel slotToBook) async {
+    // Validasi awal (Hapus pengecekan selectedSlot.value)
+    if (tutor.value == null || authC.user == null) {
       Get.snackbar("Error", "Data tidak lengkap untuk booking.");
       return;
     }
 
     isBooking.value = true; // Mulai loading
-    final slotToBook = selectedSlot.value!;
+    // 'slotToBook' sekarang didapat dari parameter
     final parentId = authC.user!.uid;
-    // Ambil nama dari user model, beri default jika null
     final studentName = authC.firestoreUser.value?.name ?? "Siswa";
 
     try {
-      // PANGGIL REPOSITORY BARU UNTUK MEMBUAT BOOKING
-      // Ini akan menjalankan transaction (create booking + update availability)
+      // Panggil Repository dengan slot yang diterima
       await _bookingRepository.createBooking(
-        slot: slotToBook,
+        slot: slotToBook, // Gunakan parameter slotToBook
         parentId: parentId,
         studentName: studentName,
       );
 
-      // Reset pilihan slot setelah booking berhasil
-      selectedSlot.value = null;
+      // --- Tidak perlu reset selectedSlot.value ---
+      // selectedSlot.value = null;
 
       // Tampilkan notifikasi sukses
       Get.snackbar(
@@ -175,21 +179,28 @@ class TutorDetailController extends GetxController {
         duration: const Duration(seconds: 4),
         mainButton: TextButton(
           onPressed: () {
-            /* TODO: Implement add to calendar */
+            /* TODO: Add to calendar */
           },
           child: const Text(
             "Add to Calendar",
             style: TextStyle(color: Colors.white),
           ),
         ),
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
       );
-
-      // (Opsional) Arahkan ke halaman My Bookings setelah sukses
-      // Get.offAndToNamed(Routes.PARENT_MY_BOOKINGS);
     } catch (e) {
-      // Tangani error dari repository (misal: slot sudah dipesan)
-      Get.snackbar("Booking Gagal", "Terjadi kesalahan: ${e.toString()}");
-      // Jangan reset pilihan jika gagal, biarkan user coba lagi
+      print(e); // Tetap log error
+      Get.snackbar(
+        "Booking Gagal",
+        "Terjadi kesalahan: ${e.toString()}",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+      );
     } finally {
       isBooking.value = false; // Hentikan loading
     }

@@ -5,9 +5,10 @@ import 'package:flutter_booking_system/data/models/tutor_model.dart';
 class ParentRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _tutorsCollection = 'tutors';
+  // 2. Tambahkan nama sub-koleksi
+  static const String _availabilitySubCollection = 'availability';
 
-  static const String _availabilityCollection = 'availability';
-
+  // --- READ TUTORS (Tetap sama) ---
   Future<List<TutorModel>> getAllTutors() async {
     try {
       final querySnapshot =
@@ -20,6 +21,7 @@ class ParentRepository {
     }
   }
 
+  // --- READ TUTOR BY ID (BARU - diperlukan controller) ---
   Future<TutorModel?> getTutorById(String tutorId) async {
     try {
       final docSnapshot =
@@ -27,25 +29,27 @@ class ParentRepository {
       if (docSnapshot.exists && docSnapshot.data() != null) {
         return TutorModel.fromJson(docSnapshot.data()!);
       }
-      return null;
+      return null; // Tutor tidak ditemukan
     } catch (e) {
       throw Exception("Gagal mengambil detail tutor: ${e.toString()}");
     }
   }
 
+  // --- READ AVAILABILITY (UPDATE DI SINI) ---
   Stream<List<AvailabilityModel>> getTutorAvailabilityStream(String tutorId) {
+    // 3. UBAH QUERY UNTUK MENARGETKAN SUB-KOLEKSI
     return _firestore
-        .collection(_availabilityCollection)
-        .where('tutorId', isEqualTo: tutorId) // Filter berdasarkan tutorId
-        .where('status', isEqualTo: 'open') // Hanya ambil yang statusnya 'open'
-        .orderBy(
-          'startUTC',
-          descending: false,
-        ) // Urutkan berdasarkan waktu mulai (paling awal dulu)
+        .collection(_tutorsCollection) // <-- Mulai dari 'tutors'
+        .doc(tutorId) // <-- Pilih dokumen tutor spesifik
+        .collection(
+          _availabilitySubCollection,
+        ) // <-- Masuk ke sub-koleksi 'availability'
+        .where('status', isEqualTo: 'open') // <-- Filter status 'open'
+        .orderBy('startUTC') // <-- Urutkan berdasarkan waktu mulai
         .snapshots()
         .map(
-          (query) =>
-              query.docs
+          (snapshot) =>
+              snapshot.docs
                   .map((doc) => AvailabilityModel.fromJson(doc.data()))
                   .toList(),
         );
