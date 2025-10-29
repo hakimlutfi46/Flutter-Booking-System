@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_booking_system/data/models/avability_model.dart';
 import 'package:flutter_booking_system/data/repository/tutor_repository.dart';
+import 'package:flutter_booking_system/presentation/widgets/dialog/app_confirmation.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
@@ -193,45 +194,29 @@ class AvabilityController extends GetxController {
 
   // --- HELPER: Konfirmasi hapus slot ---
   Future<bool> showDeleteConfirmation(String slotUid) async {
-    final result = await Get.dialog<bool>(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Hapus Slot'),
-        content: const Text('Apakah kamu yakin ingin menghapus slot ini?'),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(result: false),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red.shade600,
-            ),
-            onPressed: () async {
-              // 1. TUTUP DIALOG KONFIRMASI
-              Get.back(result: true); // Kembalikan true
-
-              // 2. MULAI LOADING STATE
-              isDeleting.value = true;
-
-              // 3. LAKUKAN OPERASI HAPUS
-              try {
-                await removeSlot(slotUid);
-                // Snackbar sukses sudah ada di removeSlot
-              } catch (e) {
-                // Snackbar gagal sudah ada di removeSlot
-                print("Error during deletion: $e");
-              } finally {
-                // 4. HENTIKAN LOADING STATE (apapun hasilnya)
-                isDeleting.value = false;
-              }
-            },
-            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
+    final confirmed = await AppConfirmation.show(
+      title: "Hapus Slot",
+      message: "Apakah kamu yakin ingin menghapus slot ini?",
+      confirmText: "Hapus",
+      cancelText: "Batal",
+      confirmColor: Colors.red,
+      icon: Icons.delete_outline,
     );
-    return result ?? false;
+
+    if (!confirmed) return false;
+
+    // Jika user menekan "Hapus"
+    isDeleting.value = true;
+
+    try {
+      await removeSlot(slotUid);
+      // Snackbar sukses/error sudah ditangani di removeSlot
+      return true;
+    } catch (e) {
+      print("Error during deletion: $e");
+      return false;
+    } finally {
+      isDeleting.value = false;
+    }
   }
 }
