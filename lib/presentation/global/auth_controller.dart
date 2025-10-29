@@ -1,26 +1,25 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_booking_system/core/data/models/user_model.dart';
+import 'package:flutter_booking_system/data/models/user_model.dart';
 import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:get/get.dart';
-import 'package:get/get_navigation/get_navigation.dart';
 
 class AuthController extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final Rxn<User> _firebaseUser = Rxn<User>();
+  final Rxn<User> firebaseUser = Rxn<User>();
   final Rxn<UserModel> firestoreUser = Rxn<UserModel>();
 
-  User? get user => _firebaseUser.value;
+  User? get user => firebaseUser.value;
 
   final isLoading = false.obs;
 
   @override
   void onReady() {
     super.onReady();
-    _firebaseUser.bindStream(_auth.authStateChanges());
-    ever(_firebaseUser, _handleAuthChanged);
+    firebaseUser.bindStream(_auth.authStateChanges());
+    ever(firebaseUser, _handleAuthChanged);
   }
 
   void _handleAuthChanged(User? user) {

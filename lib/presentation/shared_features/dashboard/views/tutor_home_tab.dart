@@ -1,10 +1,5 @@
-// lib/presentation/shared_features/dashboard/views/tutor_home_tab.dart
-
 import 'package:flutter/material.dart';
-import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
-import 'package:flutter_booking_system/core/theme/app_theme.dart';
-import 'package:flutter_booking_system/presentation/widgets/info_card.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
 
@@ -49,7 +44,7 @@ class TutorHomeTab extends StatelessWidget {
                       Text(
                         "Siap untuk mengajar hari ini?",
                         style: Get.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textLight.withOpacity(0.8),
+                          color: AppColors.textLight,
                         ),
                       ),
                     ],
