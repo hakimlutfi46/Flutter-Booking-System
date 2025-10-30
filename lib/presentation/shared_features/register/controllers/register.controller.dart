@@ -15,14 +15,14 @@ class RegisterController extends GetxController {
   final isPasswordHidden = true.obs;
 
   String? validateEmail(String? value) {
-    if (value == null || value.isEmpty) return 'Email tidak boleh kosong';
-    if (!GetUtils.isEmail(value)) return 'Format email tidak valid';
+    if (value == null || value.isEmpty) return 'Email cannot be empty';
+    if (!GetUtils.isEmail(value)) return 'Invalid email format';
     return null;
   }
 
   String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
-    if (value.length < 6) return 'Password minimal 6 karakter';
+    if (value == null || value.isEmpty) return 'Password cannot be empty';
+    if (value.length < 6) return 'Password must be at least 6 characters long';
     return null;
   }
 

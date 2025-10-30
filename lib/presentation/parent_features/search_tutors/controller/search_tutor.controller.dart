@@ -53,7 +53,7 @@ class SearchTutorController extends GetxController {
       // Awalnya, tampilkan semua tutor di hasil filter
       filteredTutors.assignAll(_allTutors);
     } catch (e) {
-      Get.snackbar("Error", "Gagal memuat daftar tutor: ${e.toString()}");
+      Get.snackbar("Error", "Failed to fetch tutors: ${e.toString()}");
     } finally {
       isLoading.value = false;
     }

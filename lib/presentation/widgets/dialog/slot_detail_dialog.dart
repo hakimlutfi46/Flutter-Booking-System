@@ -39,13 +39,13 @@ Future<void> showSlotDetailDialog(BuildContext context, dynamic slot) async {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Detail Jadwal',
+                        'Schedule Detail',
                         style: Get.textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        isOpen ? 'Slot Tersedia' : 'Slot Penuh',
+                        isOpen ? 'Slot Available' : 'Slot Full',
                         style: TextStyle(
                           color: Colors.grey.shade600,
                           fontSize: 13,
@@ -61,7 +61,7 @@ Future<void> showSlotDetailDialog(BuildContext context, dynamic slot) async {
 
             _buildDetailRow(
               Icons.calendar_today_outlined,
-              'Tanggal',
+              'Date',
               DateFormat(
                 'EEEE, d MMMM yyyy',
                 'id_ID',
@@ -70,20 +70,20 @@ Future<void> showSlotDetailDialog(BuildContext context, dynamic slot) async {
             const SizedBox(height: 16),
             _buildDetailRow(
               Icons.access_time,
-              'Waktu',
+              'Time',
               '${DateFormat('HH:mm').format(slot.startUTC.toLocal())} - ${DateFormat('HH:mm').format(slot.endUTC.toLocal())}',
             ),
             const SizedBox(height: 16),
             _buildDetailRow(
               Icons.people_outline,
-              'Kapasitas',
+              'Capacity',
               '${slot.capacity ?? 1} orang',
             ),
             const SizedBox(height: 16),
             _buildDetailRow(
               Icons.info_outline,
               'Status',
-              isOpen ? 'Tersedia untuk booking' : 'Sudah terisi penuh',
+              isOpen ? 'Ready for booking' : 'Full',
             ),
 
             const SizedBox(height: 24),
@@ -99,7 +99,7 @@ Future<void> showSlotDetailDialog(BuildContext context, dynamic slot) async {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Tutup'),
+                    child: const Text('Close'),
                   ),
                 ),
                 if (isOpen) ...[
@@ -130,7 +130,7 @@ Future<void> showSlotDetailDialog(BuildContext context, dynamic slot) async {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text('Hapus'),
+                      child: const Text('Delete'),
                     ),
                   ),
                 ],

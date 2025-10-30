@@ -38,7 +38,7 @@ class TutorDetailController extends GetxController {
       fetchTutorDetails();
       fetchAvailabilitySlots();
     } else {
-      Get.snackbar("Error", "ID Tutor tidak valid.");
+      Get.snackbar("Error", "Tutor id is't valid");
       Get.back();
     }
   }
@@ -49,10 +49,10 @@ class TutorDetailController extends GetxController {
       isLoadingTutor.value = true;
       tutor.value = await _parentRepository.getTutorById(tutorId);
       if (tutor.value == null) {
-        Get.snackbar("Error", "Data tutor tidak ditemukan.");
+        Get.snackbar("Error", "Tutor data not found");
       }
     } catch (e) {
-      Get.snackbar("Error", "Gagal memuat detail tutor: ${e.toString()}");
+      Get.snackbar("Error", "Failed to fetch tutor: ${e.toString()}");
     } finally {
       isLoadingTutor.value = false;
     }
@@ -69,7 +69,7 @@ class TutorDetailController extends GetxController {
         })
         .onError((error) {
           if (authC.firestoreUser.value?.role == 'parent') {
-            Get.snackbar("Error", "Gagal memuat jadwal: ${error.toString()}");
+            Get.snackbar("Error", "Failed to fetch availability: ${error.toString()}");
           }
           print("Availability Stream Error (Tutor Detail): $error");
           isLoadingSlots.value = false;
@@ -96,12 +96,12 @@ class TutorDetailController extends GetxController {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Konfirmasi Booking Sesi'),
+        title: const Text('Confirm Booking Session'),
         content: Column(
           mainAxisSize: MainAxisSize.min, // Agar dialog tidak terlalu besar
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Anda akan memesan sesi dengan:'),
+            Text('You are booking a session with:'),
             const SizedBox(height: 8),
             Text(
               tutorData.name,
@@ -111,7 +111,7 @@ class TutorDetailController extends GetxController {
             ),
             Text('Subjek: ${tutorData.subject}'),
             const SizedBox(height: 16),
-            Text('Pada waktu:'),
+            Text('At the following time:'),
             const SizedBox(height: 8),
             Text(
               formatLocalTimeRange(slot.startUTC, slot.endUTC),
@@ -121,7 +121,7 @@ class TutorDetailController extends GetxController {
             ),
             const SizedBox(height: 16),
             Text(
-              'Pastikan waktu sudah sesuai dengan zona waktu Anda.',
+              'Make sure the time matches your time zone.',
               style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
             ),
           ],
@@ -130,7 +130,7 @@ class TutorDetailController extends GetxController {
         actions: [
           TextButton(
             onPressed: () => Get.back(), // Hanya tutup dialog
-            child: const Text('Batal'),
+            child: const Text('Cancel'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -138,7 +138,7 @@ class TutorDetailController extends GetxController {
               // 3. KIRIM 'slot' ke processBooking
               processBooking(slot);
             },
-            child: const Text('Ya, Konfirmasi'),
+            child: const Text('Yes, Confirm'),
           ),
         ],
       ),
@@ -150,7 +150,7 @@ class TutorDetailController extends GetxController {
   Future<void> processBooking(AvailabilityModel slotToBook) async {
     // Validasi awal (Hapus pengecekan selectedSlot.value)
     if (tutor.value == null || authC.user == null) {
-      Get.snackbar("Error", "Data tidak lengkap untuk booking.");
+      Get.snackbar("Error", "Incomplete booking data");
       return;
     }
 
@@ -172,14 +172,13 @@ class TutorDetailController extends GetxController {
 
       // Tampilkan notifikasi sukses
       Get.snackbar(
-        "Booking Berhasil!",
-        "Sesi dengan ${tutor.value!.name} telah dikonfirmasi.",
+        "Booking Successful!",
+        "Session with ${tutor.value!.name} has been confirmed.",
         backgroundColor: Colors.green,
         colorText: Colors.white,
         duration: const Duration(seconds: 4),
         mainButton: TextButton(
-          onPressed: () {
-            /* TODO: Add to calendar */
+          onPressed: () {            
           },
           child: const Text(
             "Add to Calendar",
@@ -193,8 +192,8 @@ class TutorDetailController extends GetxController {
     } catch (e) {
       print(e); // Tetap log error
       Get.snackbar(
-        "Booking Gagal",
-        "Terjadi kesalahan: ${e.toString()}",
+        "Failed Booking",
+        "An error has occurred: ${e.toString()}",
         backgroundColor: Colors.red,
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,

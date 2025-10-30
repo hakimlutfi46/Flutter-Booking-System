@@ -46,7 +46,7 @@ class BookingDetailDialog extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Detail items
-            _buildDetailRow(Icons.person_outline, 'Siswa', booking.studentName),
+            _buildDetailRow(Icons.person_outline, 'Student Name', booking.studentName),
             const SizedBox(height: 16),
             _buildDetailRow(
               Icons.school_outlined,
@@ -56,7 +56,7 @@ class BookingDetailDialog extends StatelessWidget {
                   : 'ID: ${booking.tutorId.substring(0, 12)}...',
             ),
             const SizedBox(height: 16),
-            _buildDetailRow(Icons.access_time, 'Waktu Sesi', formattedTime),
+            _buildDetailRow(Icons.access_time, 'Time', formattedTime),
 
             const SizedBox(height: 24),
 
@@ -90,7 +90,7 @@ class BookingDetailDialog extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Detail Booking',
+                'Booking Detail',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
               ),
               const SizedBox(height: 2),
@@ -191,7 +191,7 @@ class BookingDetailDialog extends StatelessWidget {
           elevation: 0,
         ),
         child: const Text(
-          'Tutup',
+          'Close',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
         ),
       ),

@@ -74,7 +74,7 @@ class AvabilityController extends GetxController {
             if (authC.firestoreUser.value?.role == 'tutor') {
               AppSnackbar.show(
                 title: "Error",
-                message: "Gagal memuat jadwal: ${error.toString()}",
+                message: "Failed to load availability: ${error.toString()}",
                 type: SnackbarType.error,
               );
             }
@@ -89,8 +89,8 @@ class AvabilityController extends GetxController {
         startTime.value == null ||
         endTime.value == null) {
       AppSnackbar.show(
-        title: "Perhatian!",
-        message: "Semua kolom tanggal dan waktu harus diisi!",
+        title: "Warning!",
+        message: "All date and time fields must be filled in!",
         type: SnackbarType.warning,
       );
       return;
@@ -100,7 +100,7 @@ class AvabilityController extends GetxController {
     if (tutorId == null) {
       AppSnackbar.show(
         title: "Error",
-        message: "Sesi anda telah berakhir. Silahkan login kembali.",
+        message: "Your session has ended. Please log in again.",
         type: SnackbarType.error,
       );
       return;
@@ -129,8 +129,8 @@ class AvabilityController extends GetxController {
 
       if (endUTC.isBefore(startUTC) || endUTC.isAtSameMomentAs(startUTC)) {
         AppSnackbar.show(
-          title: "Gagal",
-          message: "Waktu selesai harus setelah waktu mulai.",
+          title: "Failed",
+          message: "The end time must be after the start time.",
           type: SnackbarType.error,
         );
         isLoading.value = false; // Hentikan loading jika validasi gagal
@@ -149,8 +149,8 @@ class AvabilityController extends GetxController {
       await _repository.createAvailabilitySlot(tutorId, newSlot);
 
       AppSnackbar.show(
-        title: "Berhasil",
-        message: "Slot jadwal berhasil ditambahkan.",
+        title: "Success",
+        message: "The schedule slot has been successfully added.",
         type: SnackbarType.success,
         position: SnackPosition.BOTTOM,
       );
@@ -162,7 +162,7 @@ class AvabilityController extends GetxController {
     } catch (e) {
       AppSnackbar.show(
         title: 'Error',
-        message: 'Gagal menambahkan slot: ${e.toString()}',
+        message: 'Failed to add slot: ${e.toString()}',
         type: SnackbarType.error,
       );
     } finally {
@@ -176,7 +176,7 @@ class AvabilityController extends GetxController {
     if (tutorId == null) {
       AppSnackbar.show(
         title: "Error",
-        message: "Sesi anda telah berakhir. Silahkan login kembali.",
+        message: "Your session has ended. Please log in again.",
         type: SnackbarType.error,
       );
 
@@ -187,13 +187,13 @@ class AvabilityController extends GetxController {
 
       AppSnackbar.show(
         title: 'Success',
-        message: 'Slot dihapus',
+        message: 'Slot deleted',
         type: SnackbarType.success,
       );
     } catch (e) {
       AppSnackbar.show(
         title: 'Error',
-        message: 'Gagal menghapus slot: ${e.toString()}',
+        message: 'Failed to delete slot: ${e.toString()}',
         type: SnackbarType.error,
       );
 

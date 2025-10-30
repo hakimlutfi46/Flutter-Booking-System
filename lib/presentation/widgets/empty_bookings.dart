@@ -13,18 +13,18 @@ class EmptyBookings extends StatelessWidget {
 
     switch (status) {
       case BookingStatusFilter.upcoming:
-        title = 'Belum Ada Booking';
-        message = 'Anda belum memiliki sesi mendatang.';
+        title = 'No Bookings Yet';
+        message = 'You don’t have any upcoming sessions.';
         icon = Icons.event_note_outlined;
         break;
       case BookingStatusFilter.past:
-        title = 'Belum Ada Riwayat';
-        message = 'Riwayat sesi Anda akan muncul di sini.';
+        title = 'No History Yet';
+        message = 'Your session history will appear here.';
         icon = Icons.history_edu_outlined;
         break;
       case BookingStatusFilter.cancelled:
-        title = 'Tidak Ada Pembatalan';
-        message = 'Anda tidak memiliki sesi yang dibatalkan.';
+        title = 'No Cancellations';
+        message = 'You don’t have any cancelled sessions.';
         icon = Icons.event_busy_outlined;
         break;
     }
@@ -37,15 +37,19 @@ class EmptyBookings extends StatelessWidget {
           children: [
             Icon(icon, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 16),
-            Text(title,
-                style: Get.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade700,
-                )),
+            Text(
+              title,
+              style: Get.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade700,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade500, height: 1.5)),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey.shade500, height: 1.5),
+            ),
           ],
         ),
       ),

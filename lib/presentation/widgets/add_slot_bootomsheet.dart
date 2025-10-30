@@ -52,7 +52,7 @@ class AddSlotBottomSheet extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Tambah Jadwal Baru',
+                    'Add new schedule',
                     style: Get.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -77,10 +77,10 @@ class AddSlotBottomSheet extends StatelessWidget {
               () => _buildPickerTile(
                 context: context,
                 icon: Icons.calendar_today_outlined,
-                label: 'Tanggal',
+                label: 'Date',
                 valueText:
                     controller.selectedDate.value == null
-                        ? 'Pilih tanggal'
+                        ? 'Choose date'
                         : DateFormat(
                           'EEEE, d MMMM yyyy',
                           'id_ID',
@@ -95,10 +95,10 @@ class AddSlotBottomSheet extends StatelessWidget {
               () => _buildPickerTile(
                 context: context,
                 icon: Icons.access_time,
-                label: 'Waktu Mulai',
+                label: 'Start Time',
                 valueText:
                     controller.startTime.value == null
-                        ? 'Pilih waktu mulai'
+                        ? 'Choose start time'
                         : controller.startTime.value!.format(context),
                 onTap: () => _pickStartTime(context),
                 isSelected: controller.startTime.value != null,
@@ -110,10 +110,10 @@ class AddSlotBottomSheet extends StatelessWidget {
               () => _buildPickerTile(
                 context: context,
                 icon: Icons.access_time_filled_outlined,
-                label: 'Waktu Selesai',
+                label: 'End Time',
                 valueText:
                     controller.endTime.value == null
-                        ? 'Pilih waktu selesai'
+                        ? 'Choose end time'
                         : controller.endTime.value!.format(context),
                 onTap: () => _pickEndTime(context),
                 isSelected: controller.endTime.value != null,
@@ -130,11 +130,11 @@ class AddSlotBottomSheet extends StatelessWidget {
                     controller.resetForm();
                     Get.back();
                   },
-                  child: const Text('Batal'),
+                  child: const Text('Cancel'),
                 ),
                 Obx(
                   () => PrimaryButton(
-                    text: 'Simpan Jadwal',
+                    text: 'Save Schedule',
                     isLoading: controller.isLoading.value,
                     onPressed: () async {
                       await controller.addSlot();

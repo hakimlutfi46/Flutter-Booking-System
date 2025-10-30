@@ -20,7 +20,7 @@ class AvailabilityScreen extends GetView<AvabilityController> {
           elevation: 0,
           backgroundColor: AppColors.primary,
           title: const Text(
-            'Atur Jadwal Ketersediaan',
+            'Your Scheduled Availability',
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
           ),
           bottom: PreferredSize(
@@ -35,15 +35,15 @@ class AvailabilityScreen extends GetView<AvabilityController> {
                 tabs: [
                   Tab(
                     icon: Icon(Icons.event_note_outlined, size: 20),
-                    text: 'Semua',
+                    text: 'All',
                   ),
                   Tab(
                     icon: Icon(Icons.event_available_outlined, size: 20),
-                    text: 'Buka',
+                    text: 'Open',
                   ),
                   Tab(
                     icon: Icon(Icons.event_busy_outlined, size: 20),
-                    text: 'Penuh',
+                    text: 'Full',
                   ),
                 ],
               ),
@@ -54,7 +54,7 @@ class AvailabilityScreen extends GetView<AvabilityController> {
           // Panggil fungsi bottom sheet dari file widget Anda
           onPressed: () => showAddSlotBottomSheet(context, controller),
           icon: const Icon(Icons.add),
-          label: const Text('Tambah Jadwal'),
+          label: const Text('Add Schedule'),
         ),
 
         // 1. BUNGKUS BODY DENGAN STACK

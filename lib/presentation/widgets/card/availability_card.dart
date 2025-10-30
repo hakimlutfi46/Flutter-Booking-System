@@ -89,12 +89,12 @@ class AvailabilityCard extends GetView<AvabilityController> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              'Kapasitas: ${slot.capacity ?? 1} orang',
+              'Capacity: ${slot.capacity ?? 1} orang',
               style: Get.textTheme.bodyMedium,
             ),
             Chip(
               label: Text(
-                isOpen ? 'Buka' : 'Penuh',
+                isOpen ? 'Open' : 'Full',
                 style: Get.textTheme.bodySmall,
               ),
               backgroundColor:

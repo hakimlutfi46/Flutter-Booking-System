@@ -47,7 +47,7 @@ class TutorSessionsController extends GetxController {
         isLoading.value = false;
       },
       onError: (error) {
-        AppSnackbar.show(title: "Error", message: "Gagal memuat sesi: ${error.toString()}", type: SnackbarType.error);
+        AppSnackbar.show(title: "Error", message: "Failed to load sesion: ${error.toString()}", type: SnackbarType.error);
         isLoading.value = false;
       },
     );
@@ -71,9 +71,9 @@ class TutorSessionsController extends GetxController {
 
      try {
        await _repository.updateSessionStatus(bookingId, tutorId, 'completed');
-       AppSnackbar.show(title: "Berhasil", message: "Sesi ditandai selesai.", type: SnackbarType.success);
+       AppSnackbar.show(title: "Success", message: "The session is marked as complete.", type: SnackbarType.success);
      } catch (e) {
-       AppSnackbar.show(title: "Gagal", message: "Gagal menyelesaikan sesi: ${e.toString()}", type: SnackbarType.error);
+       AppSnackbar.show(title: "Failed", message: "Failed to complete session: ${e.toString()}", type: SnackbarType.error);
      } finally {
         isProcessing.value = false;
      }
@@ -85,9 +85,9 @@ class TutorSessionsController extends GetxController {
     if (tutorId == null) return;
 
     final bool confirmed = await AppConfirmation.show(
-       title: 'Batalkan Sesi?',
-       message: 'Sesi akan dibatalkan, dan slot waktu akan dibuka kembali.',
-       confirmText: 'Ya, Batalkan',
+       title: 'Cancel Sesion?',
+       message: 'The session will be canceled, and the time slot will be reopened.',
+       confirmText: 'Yes, Cancel',
        confirmColor: Colors.red.shade600,
        icon: Icons.cancel_outlined,
      );
@@ -97,9 +97,9 @@ class TutorSessionsController extends GetxController {
 
      try {
        await _repository.updateSessionStatus(bookingId, tutorId, 'cancelled');
-       AppSnackbar.show(title: "Berhasil", message: "Sesi dibatalkan dan slot dibuka kembali.", type: SnackbarType.success);
+       AppSnackbar.show(title: "Success", message: "The session has been canceled and the slot has been reopened.", type: SnackbarType.success);
      } catch (e) {
-       AppSnackbar.show(title: "Gagal", message: "Gagal membatalkan sesi: ${e.toString()}", type: SnackbarType.error);
+       AppSnackbar.show(title: "Failed", message: "Failed to cancel session: ${e.toString()}", type: SnackbarType.error);
      } finally {
         isProcessing.value = false;
      }
@@ -112,14 +112,14 @@ class TutorSessionsController extends GetxController {
 
     Get.dialog(AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Detail Sesi'),
+        title: const Text('Session Detail'),
         content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Siswa: ${session.studentName}', style: Get.textTheme.titleMedium),
+              Text('Student: ${session.studentName}', style: Get.textTheme.titleMedium),
               const SizedBox(height: 8),
-              Text('Waktu: $formattedTime', style: Get.textTheme.bodyMedium),
+              Text('Time: $formattedTime', style: Get.textTheme.bodyMedium),
               const SizedBox(height: 8),
               Text('Status: ${session.status.toUpperCase()}', style: Get.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: session.status == 'confirmed' ? Colors.green.shade600 : Colors.red.shade600)),
               const SizedBox(height: 16),

@@ -41,7 +41,7 @@ class TutorHomeTab extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "Siap untuk mengajar hari ini?",
+                        "Ready to teach today?",
                         style: Get.textTheme.bodyMedium?.copyWith(
                           color: AppColors.textLight,
                         ),
@@ -64,7 +64,7 @@ class TutorHomeTab extends StatelessWidget {
                         Expanded(
                           child: StatCard(
                             icon: Icons.today_outlined,
-                            label: "Hari Ini",
+                            label: "Today",
                             value:
                                 dashboardController
                                     .todayConfirmedSessionsCount
@@ -77,7 +77,7 @@ class TutorHomeTab extends StatelessWidget {
                         Expanded(
                           child: StatCard(
                             icon: Icons.date_range_outlined,
-                            label: "Minggu Ini",
+                            label: "This Week",
                             value:
                                 dashboardController
                                     .thisWeekConfirmedSessionsCount
@@ -112,7 +112,7 @@ class TutorHomeTab extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Akses Cepat",
+                      "Quick Access",
                       style: Get.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -156,7 +156,7 @@ class TutorHomeTab extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Jadwal hari ini",
+                          "Toaday's Schedule",
                           style: Get.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),

@@ -54,7 +54,7 @@ class AuthController extends GetxController {
 
       Get.offAllNamed(Routes.DASHBOARD);
     } catch (e) {
-      Get.snackbar("Error", "Gagal mengambil data user: ${e.toString()}");
+      Get.snackbar("Error", "Failed to load user: ${e.toString()}");
       await logout();
     }
   }
@@ -67,21 +67,21 @@ class AuthController extends GetxController {
       String errorMessage;
       switch (e.code) {
         case "invalid-email":
-          errorMessage = "Format email yang kamu masukkan salah.";
+          errorMessage = "The email format you entered is invalid.";
           break;
         case "wrong-password":
-          errorMessage = "Password yang kamu masukkan salah.";
+          errorMessage = "The password you entered is incorrect";
           break;
         case "user-not-found":
-          errorMessage = "Akun dengan email ini tidak ditemukan.";
+          errorMessage = "No account found with this email";
           break;
         case "invalid-credential":
-          errorMessage = "Email atau password salah.";
+          errorMessage = "Incorrect email or password";
           break;
         default:
-          errorMessage = "Terjadi kesalahan. Coba lagi nanti.";
+          errorMessage = "An error occurred. Please try again later";
       }
-      Get.snackbar("Gagal Login", errorMessage);
+      Get.snackbar("Failed to login", errorMessage);
     } finally {
       isLoading.value = false;
     }
@@ -126,21 +126,21 @@ class AuthController extends GetxController {
       String errorMessage;
       switch (e.code) {
         case "invalid-email":
-          errorMessage = "Format email yang kamu masukkan salah.";
+          errorMessage = "The email format you entered is invalid";
           break;
         case "email-already-in-use":
-          errorMessage = "Email ini sudah terdaftar. Silakan login.";
+          errorMessage = "This email is already registered. Please log in";
           break;
         case "weak-password":
-          errorMessage = "Password terlalu lemah. (Minimal 6 karakter)";
+          errorMessage = "The password is too weak. (Minimum 6 characters)";
           break;
         default:
-          errorMessage = "Terjadi kesalahan. Coba lagi nanti.";
+          errorMessage = "An error occurred. Please try again later";
       }
-      Get.snackbar("Gagal Register", errorMessage);
+      Get.snackbar("Register Failed", errorMessage);
     } catch (e) {
       // Tangkap error non-Firebase juga
-      Get.snackbar("Gagal Register", e.toString());
+      Get.snackbar("Register Failed", e.toString());
     } finally {
       isLoading.value = false;
     }

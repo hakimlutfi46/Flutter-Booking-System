@@ -7,8 +7,8 @@ class AppConfirmation {
   static Future<bool> show({
     required String title,
     required String message,
-    String confirmText = "Ya",
-    String cancelText = "Batal",
+    String confirmText = "Yes",
+    String cancelText = "Cancel",
     Color? confirmColor,
     bool barrierDismissible = false,
     IconData? icon,

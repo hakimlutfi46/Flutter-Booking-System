@@ -1,0 +1,41 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "flutter_booking_system",
+      "request": "launch",
+      "type": "dart"
+    },
+    {
+      "name": "Virtual Device 1",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "Virtual Device 2",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "deviceId": "emulator-5554"
+    },
+    {
+      "name": "Infinix Note 40 Pro 5G",
+      "request": "launch",
+      "type": "dart",
+      "flutterMode": "profile",
+      "deviceId": "1215125441002616"
+    }
+  ],
+
+  "compounds": [
+    {
+      "name": "Test 2 Roles",      
+      "configurations": ["Virtual Device 1", "Infinix Note 40 Pro 5G"]
+    }
+  ]
+}

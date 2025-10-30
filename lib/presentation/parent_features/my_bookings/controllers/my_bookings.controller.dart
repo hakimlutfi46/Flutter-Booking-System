@@ -49,7 +49,7 @@ class MyBookingsController extends GetxController {
       // Gunakan AppSnackbar
       AppSnackbar.show(
         title: "Error",
-        message: "User tidak ditemukan.",
+        message: "User not found.",
         type: SnackbarType.error,
       );
       isLoading.value = false;
@@ -130,15 +130,15 @@ class MyBookingsController extends GetxController {
 
       // Tampilkan snackbar sukses dari helper
       AppSnackbar.show(
-        title: "Berhasil",
-        message: "Booking berhasil dibatalkan.",
+        title: "Success",
+        message: "The booking has been successfully canceled.",
         type: SnackbarType.success,
       );
     } catch (e) {
       // Tampilkan snackbar error dari helper
       AppSnackbar.show(
-        title: "Gagal",
-        message: "Gagal membatalkan booking: ${e.toString()}",
+        title: "Failed",
+        message: "Failed to cancel booking: ${e.toString()}",
         type: SnackbarType.error,
       );
     } finally {
@@ -172,13 +172,13 @@ class MyBookingsController extends GetxController {
       await Future.delayed(const Duration(milliseconds: 300));
       AppSnackbar.show(
         title: "Info",
-        message: "Silakan pilih jadwal pengganti untuk sesi ini.",
+        message: "Please select an alternative schedule for this session.",
         type: SnackbarType.neutral,
       );
     } catch (e) {
       AppSnackbar.show(
-        title: "Gagal",
-        message: "Gagal memulai proses rebook: ${e.toString()}",
+        title: "Failed",
+        message: "Failed to start the rebooking process: ${e.toString()}",
         type: SnackbarType.error,
       );
     } finally {
@@ -217,7 +217,7 @@ class MyBookingsController extends GetxController {
 
       AppSnackbar.show(
         title: "Error",
-        message: "Gagal memuat data tutor: ${e.toString()}",
+        message: "Failed to load tutor: ${e.toString()}",
         type: SnackbarType.error,
       );
     }

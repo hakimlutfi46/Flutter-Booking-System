@@ -108,12 +108,12 @@ class DashboardScreen extends GetView<DashboardController> {
           BottomNavigationBarItem(
             icon: Icon(Icons.schedule_outlined),
             activeIcon: Icon(Icons.schedule),
-            label: 'Jadwal',
+            label: 'Schedule',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline),
             activeIcon: Icon(Icons.person),
-            label: 'Profil',
+            label: 'Profile',
           ),
         ],
         type: BottomNavigationBarType.fixed,

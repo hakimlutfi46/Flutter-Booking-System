@@ -43,14 +43,14 @@ class ProfileController extends GetxController {
     try {
       await authC.logout();
       AppSnackbar.show(
-        title: "Berhasil",
-        message: "Anda telah keluar dari akun.",
+        title: "Success",
+        message: "You have logged out of your account.",
         type: SnackbarType.success,
       );
     } catch (e) {
       AppSnackbar.show(
-        title: "Gagal",
-        message: "Gagal logout: ${e.toString()}",
+        title: "Failed",
+        message: "Failed logout: ${e.toString()}",
         type: SnackbarType.error,
       );
     } finally {
@@ -87,8 +87,8 @@ class ProfileController extends GetxController {
       totalSessions.value = sessionsQuery.count ?? 0; // Update jumlah sesi
     } catch (e) {
       Get.snackbar(
-        "Error Statistik",
-        "Gagal memuat data statistik: ${e.toString()}",
+        "Error Statistics",
+        "Failed to load statistics: ${e.toString()}",
       );
     } finally {
       isLoadingStats.value = false;

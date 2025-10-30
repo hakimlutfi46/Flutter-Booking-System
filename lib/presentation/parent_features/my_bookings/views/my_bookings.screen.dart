@@ -16,66 +16,68 @@ class MyBookingsScreen extends GetView<MyBookingsController> {
       child: Scaffold(
         backgroundColor: Colors.grey.shade50,
         body: NestedScrollView(
-          headerSliverBuilder: (_, __) => [
-            SliverAppBar(
-              floating: true,
-              pinned: true,
-              elevation: 1,
-              backgroundColor: Get.theme.primaryColor,
-              foregroundColor: Colors.white,
-              expandedHeight: 120,
-              flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        Get.theme.primaryColor,
-                        Get.theme.primaryColor.withOpacity(0.8),
-                      ],
-                    ),
-                  ),
-                  child: const SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Text(
-                        'My Bookings',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+          headerSliverBuilder:
+              (_, __) => [
+                SliverAppBar(
+                  floating: true,
+                  pinned: true,
+                  elevation: 1,
+                  backgroundColor: Get.theme.primaryColor,
+                  foregroundColor: Colors.white,
+                  expandedHeight: 120,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            Get.theme.primaryColor,
+                            Get.theme.primaryColor.withOpacity(0.8),
+                          ],
+                        ),
+                      ),
+                      child: const SafeArea(
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                          child: Text(
+                            'My Bookings',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
+                  bottom: BookingTabBar(onChanged: controller.changeTab),
                 ),
-              ),
-              bottom: BookingTabBar(onChanged: controller.changeTab),
-            ),
-          ],
+              ],
           body: Obx(() {
             if (controller.isLoading.value) return const LoadingSpinner();
 
             return TabBarView(
-              children: BookingStatusFilter.values.map((filter) {
-                final bookings = controller.getBookingsByFilter(filter);
-                if (bookings.isEmpty) {
-                  return EmptyBookings(status: filter);
-                }
-              return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
-                  itemCount: bookings.length,
-                  itemBuilder: (_, i) {
-                    final booking = bookings[i];
-                    return BookingCard(
-                      booking: booking,
-                      isUpcoming: filter == BookingStatusFilter.upcoming,
-                      controller: controller,
+              children:
+                  BookingStatusFilter.values.map((filter) {
+                    final bookings = controller.getBookingsByFilter(filter);
+                    if (bookings.isEmpty) {
+                      return EmptyBookings(status: filter);
+                    }
+                    return ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
+                      itemCount: bookings.length,
+                      itemBuilder: (_, i) {
+                        final booking = bookings[i];
+                        return BookingCard(
+                          booking: booking,
+                          isUpcoming: filter == BookingStatusFilter.upcoming,
+                          controller: controller,
+                        );
+                      },
                     );
-                  },
-                );
-              }).toList(),
+                  }).toList(),
             );
           }),
         ),

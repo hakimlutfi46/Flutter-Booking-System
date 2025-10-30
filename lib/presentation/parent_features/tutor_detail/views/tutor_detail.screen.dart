@@ -189,104 +189,19 @@ class TutorDetailScreen extends GetView<TutorDetailController> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Tentang Tutor',
+            'About Tutor',
             style: Get.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Tutor berpengalaman dengan spesialisasi ${tutor.subject}. Siap membantu Anda mencapai tujuan pembelajaran dengan metode yang efektif dan menyenangkan.', // Placeholder text
+            'Experienced tutor specializing in ${tutor.subject}. Ready to help you achieve your learning goals with effective and enjoyable methods.', // Placeholder text
             style: TextStyle(
               color: Colors.grey.shade700,
               height: 1.5,
               fontSize: 14,
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Stats section (tidak berubah)
-  Widget _buildStatsSection(TutorModel tutor) {
-    // ... (Kode _buildStatsSection tidak berubah)
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.schedule,
-              label: 'Total Sesi',
-              value: '24+', // Placeholder
-              color: Colors.blue,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.people,
-              label: 'Siswa',
-              value: '15+', // Placeholder
-              color: Colors.green,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: _buildStatCard(
-              icon: Icons.verified,
-              label: 'Pengalaman',
-              value: '3 Tahun', // Placeholder
-              color: Colors.orange,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helper Stat Card (tidak berubah)
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    // ... (Kode _buildStatCard tidak berubah)
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey.shade600, fontSize: 11),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
@@ -309,7 +224,7 @@ class TutorDetailScreen extends GetView<TutorDetailController> {
               ),
               const SizedBox(width: 8),
               Text(
-                'Pilih Jadwal Tersedia',
+                'Select Available Schedule',
                 style: Get.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -397,7 +312,7 @@ class TutorDetailScreen extends GetView<TutorDetailController> {
       elevation: 1.5, // Sedikit shadow
       shadowColor: Colors.black.withOpacity(0.08),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(                
+      child: InkWell(
         onTap: () => controller.showBookingConfirmationDialog(slot),
         borderRadius: BorderRadius.circular(16),
         child: Padding(

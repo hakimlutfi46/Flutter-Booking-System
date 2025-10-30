@@ -12,18 +12,18 @@ class EmptyState extends StatelessWidget {
 
     switch (filter) {
       case 'open':
-        title = 'Tidak Ada Jadwal Buka';
-        message = 'Semua jadwal Anda sudah terisi penuh.';
+        title = 'No Open Schedule';
+        message = 'All your schedules are already full.';
         icon = Icons.event_available_outlined;
         break;
       case 'closed':
-        title = 'Tidak Ada Jadwal Penuh';
-        message = 'Belum ada jadwal penuh.';
+        title = 'No Full Schedule';
+        message = 'There are no full schedules yet.';
         icon = Icons.event_busy_outlined;
         break;
       default:
-        title = 'Belum Ada Jadwal';
-        message = 'Tambahkan jadwal untuk mulai menerima booking.';
+        title = 'No Schedule Yet';
+        message = 'Add a schedule to start receiving bookings.';
         icon = Icons.event_note_outlined;
     }
 
