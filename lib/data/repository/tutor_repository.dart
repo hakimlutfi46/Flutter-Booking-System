@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_booking_system/data/models/avability_model.dart';
+import 'package:flutter_booking_system/data/models/tutor_model.dart';
 
 class TutorRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -58,6 +59,16 @@ class TutorRepository {
       });
     } catch (e) {
       throw Exception("Gagal memperbarui status slot: ${e.toString()}");
+    }
+  }
+
+  Future<TutorModel?> getTutorById(String tutorId) async {
+    try {
+      final doc = await _firestore.collection('tutors').doc(tutorId).get();
+      if (!doc.exists) return null;
+      return TutorModel.fromJson(doc.data()!);
+    } catch (e) {
+      throw Exception("Gagal memuat data tutor: ${e.toString()}");
     }
   }
 }

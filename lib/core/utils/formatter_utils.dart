@@ -33,7 +33,18 @@ class FormatterUtils {
     if (difference == 1) return 'Besok';
     if (difference == -1) return 'Kemarin';
 
-    // Jika bukan hari ini, besok, atau kemarin, tampilkan nama hari
     return DateFormat('EEEE', 'id_ID').format(dateTime.toLocal());
+  }
+
+  static String formatBookingTime(DateTime startUTC, DateTime endUTC) {
+    final startLocal = startUTC.toLocal();
+    final endLocal = endUTC.toLocal();
+    final dateString = DateFormat(
+      'EEE, d MMM yyyy',
+      'id_ID',
+    ).format(startLocal);
+    final timeString =
+        '${DateFormat('HH:mm').format(startLocal)} - ${DateFormat('HH:mm').format(endLocal)}';
+    return '$dateString\n$timeString';
   }
 }

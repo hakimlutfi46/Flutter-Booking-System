@@ -1,10 +1,12 @@
-import 'dart:async'; // Untuk StreamSubscription
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_booking_system/core/utils/formatter_utils.dart';
 import 'package:flutter_booking_system/data/models/booking_model.dart';
 import 'package:flutter_booking_system/data/repository/booking_repository.dart';
+import 'package:flutter_booking_system/data/repository/tutor_repository.dart';
 import 'package:flutter_booking_system/presentation/global/auth_controller.dart';
+import 'package:flutter_booking_system/presentation/widgets/dialog/booking_detail_dialog.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_booking_system/presentation/widgets/dialog/app_confirmation.dart';
 import 'package:flutter_booking_system/presentation/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter_booking_system/core/navigation/routes.dart';
@@ -14,6 +16,7 @@ enum BookingStatusFilter { upcoming, past, cancelled }
 class MyBookingsController extends GetxController {
   final BookingRepository _repository = Get.find<BookingRepository>();
   final AuthController authC = Get.find<AuthController>();
+  final TutorRepository _tutorRepo = Get.find<TutorRepository>();
 
   // State
   final RxList<BookingModel> allbookings = <BookingModel>[].obs;
@@ -75,7 +78,6 @@ class MyBookingsController extends GetxController {
         );
   }
 
-  // --- Logika Pemfilteran (Tidak berubah) ---
   void _filterBookings() {
     final now = DateTime.now();
     List<BookingModel> result = [];
@@ -185,55 +187,55 @@ class MyBookingsController extends GetxController {
   }
 
   // 3. Fungsi Lihat Detail (Diimplementasikan)
-  void viewBookingDetail(BookingModel booking) {
-    final formattedTime = formatBookingTime(booking.startUTC, booking.endUTC);
+  Future<void> viewBookingDetail(BookingModel booking) async {
+    final formattedTime = FormatterUtils.formatBookingTime(
+      booking.startUTC,
+      booking.endUTC,
+    );
 
     Get.dialog(
-      AlertDialog(
-        title: const Text('Detail Booking'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Status: ${booking.status.toUpperCase()}',
-              style: Get.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Tutor ID: ${booking.tutorId}',
-              style: Get.textTheme.bodyMedium,
-            ),
-            Text('Waktu: $formattedTime', style: Get.textTheme.bodyMedium),
-            Text(
-              'Siswa: ${booking.studentName}',
-              style: Get.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Booking ID: ${booking.uid}',
-              style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey),
-            ),
-          ],
-        ),
-        actions: [TextButton(onPressed: Get.back, child: const Text('Tutup'))],
-      ),
+      const Center(child: CircularProgressIndicator()),
+      barrierDismissible: false,
     );
+
+    try {
+      final tutor = await _tutorRepo.getTutorById(booking.tutorId);
+
+      Get.back();
+      Get.dialog(
+        BookingDetailDialog(
+          booking: booking,
+          formattedTime: formattedTime,
+          tutor: tutor,
+        ),
+      );
+    } catch (e) {
+      Get.back();
+      Get.dialog(
+        BookingDetailDialog(booking: booking, formattedTime: formattedTime),
+      );
+
+      AppSnackbar.show(
+        title: "Error",
+        message: "Gagal memuat data tutor: ${e.toString()}",
+        type: SnackbarType.error,
+      );
+    }
   }
 
-  // --- Helper Format Waktu (Harusnya ditaruh di utils) ---
-  String formatBookingTime(DateTime startUTC, DateTime endUTC) {
-    // Asumsi FormatterUtils diimport atau logika ini tetap di sini
-    final startLocal = startUTC.toLocal();
-    final endLocal = endUTC.toLocal();
-    final dateString = DateFormat(
-      'EEE, d MMM yyyy',
-      'id_ID',
-    ).format(startLocal);
-    final timeString =
-        '${DateFormat('HH:mm').format(startLocal)} - ${DateFormat('HH:mm').format(endLocal)}';
-    return '$dateString\n$timeString';
+  List<BookingModel> getBookingsByFilter(BookingStatusFilter filter) {
+    final now = DateTime.now();
+    switch (filter) {
+      case BookingStatusFilter.upcoming:
+        return allbookings
+            .where((b) => b.status == 'confirmed' && b.startUTC.isAfter(now))
+            .toList();
+      case BookingStatusFilter.past:
+        return allbookings
+            .where((b) => b.status != 'cancelled' && b.endUTC.isBefore(now))
+            .toList();
+      case BookingStatusFilter.cancelled:
+        return allbookings.where((b) => b.status == 'cancelled').toList();
+    }
   }
 }
