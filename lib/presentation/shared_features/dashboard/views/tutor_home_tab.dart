@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/quick_access_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/stat_card.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
@@ -57,12 +59,10 @@ class TutorHomeTab extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: Obx(() {
-                    final bool isLoading =
-                        dashboardController.isLoadingStats.value;
                     return Row(
                       children: [
                         Expanded(
-                          child: _buildStatCard(
+                          child: StatCard(
                             icon: Icons.today_outlined,
                             label: "Hari Ini",
                             value:
@@ -75,7 +75,7 @@ class TutorHomeTab extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: _buildStatCard(
+                          child: StatCard(
                             icon: Icons.date_range_outlined,
                             label: "Minggu Ini",
                             value:
@@ -88,7 +88,7 @@ class TutorHomeTab extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: _buildStatCard(
+                          child: StatCard(
                             icon: Icons.star,
                             label: "Rating",
                             value:
@@ -118,24 +118,20 @@ class TutorHomeTab extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildQuickAccessCard(
+                    QuickAccessCard(
                       icon: Icons.edit_calendar,
                       iconColor: AppColors.primary,
                       title: "Publish Availability",
-                      subtitle: "Atur jadwal kosongmu agar bisa dipesan",
-                      onTap: () {
-                        dashboardController.changeTabIndex(1);
-                      },
+                      subtitle: "Free up your schedule so it can be booked",
+                      onTap: () => dashboardController.changeTabIndex(1),
                     ),
                     const SizedBox(height: 12),
-                    _buildQuickAccessCard(
+                    QuickAccessCard(
                       icon: Icons.event_available,
                       iconColor: AppColors.secondary,
                       title: "Upcoming Sessions",
-                      subtitle: "Lihat daftar sesi yang sudah dipesan",
-                      onTap: () {
-                        Get.toNamed(Routes.TUTOR_SESSIONS);
-                      },
+                      subtitle: "See the list of booked sessions",
+                      onTap: () => Get.toNamed(Routes.TUTOR_SESSIONS),
                     ),
                   ],
                 ),
@@ -195,36 +191,32 @@ class TutorHomeTab extends StatelessWidget {
                       }
                       // Handle empty state
                       if (dashboardController.todayUpcomingSessions.isEmpty) {
-                        return Container(
-                          // Container untuk empty state
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 32,
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.background,
-                            borderRadius: BorderRadius.circular(16),
-                            
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.calendar_month,
-                                size: 30,
-                                color: Colors.grey,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                "Tidak ada Sesi yang akan datang",
-                                style: Get.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                        return Center(
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey[200]!),
+                            ),
+                            width: double.infinity,
+                            height: 200,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.calendar_month,
+                                  size: 30,
                                   color: Colors.grey,
                                 ),
-                              ),
-                            ],
+                                SizedBox(height: 8),
+                                Text(
+                                  "There is no recent activity",
+                                  style: Get.textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }
@@ -261,117 +253,6 @@ class TutorHomeTab extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            value,
-            style: Get.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textLight,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: Get.textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-              fontSize: 11,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickAccessCard({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: iconColor, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Get.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Get.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
-            ],
-          ),
         ),
       ),
     );

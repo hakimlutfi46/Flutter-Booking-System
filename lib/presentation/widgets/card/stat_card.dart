@@ -7,6 +7,7 @@ class StatCard extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final double? iconSize;
 
   const StatCard({
     super.key,
@@ -14,6 +15,7 @@ class StatCard extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.iconSize,
   });
 
   @override
@@ -39,7 +41,7 @@ class StatCard extends StatelessWidget {
               color: color.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(icon, color: color, size: 20),
+            child: Icon(icon, color: color, size: iconSize ?? 20),
           ),
           const SizedBox(height: 10),
           Text(

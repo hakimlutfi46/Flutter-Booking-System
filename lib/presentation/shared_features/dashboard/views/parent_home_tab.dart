@@ -2,6 +2,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/core/theme/app_colors.dart';
+import 'package:flutter_booking_system/core/utils/formatter_utils.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/activity_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/quick_access_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/stat_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/home_header.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/shared_features/dashboard/controllers/dashboard.controller.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -17,318 +22,240 @@ class ParentHomeTab extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // Header Section
-            SliverToBoxAdapter(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  // borderRadius: const BorderRadius.only(
-                  //   bottomLeft: Radius.circular(32),
-                  //   bottomRight: Radius.circular(32),
-                  // ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primary,
+                        AppColors.primary.withOpacity(0.8),
+                      ],
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(25),
+                      bottomRight: Radius.circular(25),
+                    ),
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 40),
+
+                // Content di atas background
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Greeting text
                       Obx(
-                        () => Text(
-                          "Halo, ${dashboardController.userGreetingName}! 👋",
-                          style: Get.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.textLight,
+                        () => RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Halo, ',
+                                style: Get.textTheme.headlineMedium?.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              TextSpan(
+                                text: dashboardController.userGreetingName,
+                                style: Get.textTheme.headlineMedium?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' 👋',
+                                style: TextStyle(fontSize: 26),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
+
+                      // Subtitle
                       Text(
-                        "Mari belajar bersama tutor terbaik hari ini",
-                        style: Get.textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textLight.withOpacity(0.8),
+                        "Let's learn with a tutor today",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.85),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
                         ),
                       ),
+
+                      const SizedBox(height: 40),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Obx(
+                              () => StatCard(
+                                icon: Icons.calendar_today,
+                                iconSize: 33,
+                                label: "Upcoming",
+                                value:
+                                    dashboardController.parentUpcomingCount
+                                        .toString(),
+                                color: AppColors.secondary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Obx(
+                              () => StatCard(
+                                icon: Icons.check_circle_outline,
+                                iconSize: 33,
+                                label: "Completed",
+                                value:
+                                    dashboardController.parentCompletedCount
+                                        .toString(),
+                                color: Colors.green,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24), // Padding bawah
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
 
-            // Stats Cards
-            SliverToBoxAdapter(
-              child: Transform.translate(
-                offset: const Offset(0, -24),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.calendar_today,
-                          label: "Upcoming",
-                          value: "3", // TODO: Dynamic data
-                          color: AppColors.secondary,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildStatCard(
-                          icon: Icons.check_circle_outline,
-                          label: "Completed",
-                          value: "12", // TODO: Dynamic data
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
+          // Quick Access Section
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+            sliver: SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Quick Access",
+                    style: Get.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  QuickAccessCard(
+                    icon: Icons.search,
+                    iconColor: AppColors.primary,
+                    title: "Book a Session",
+                    subtitle: "Search for tutors by name of subject",
+                    onTap: () => Get.toNamed(Routes.SEARCH_TUTOR),
+                  ),
+                  const SizedBox(height: 12),
+                  QuickAccessCard(
+                    icon: Icons.event_note,
+                    iconColor: AppColors.secondary,
+                    title: "My Bookings",
+                    subtitle: "See all your booked sessions",
+                    onTap: () => dashboardController.changeTabIndex(1),
+                  ),
+                ],
               ),
             ),
+          ),
 
-            // Quick Access Section
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-              sliver: SliverToBoxAdapter(
-                child: Column(
+          // Recent Activity Section
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+            sliver: SliverToBoxAdapter(
+              child: Obx(() {
+                if (dashboardController.isLoadingParentStats.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Quick Access",
-                      style: Get.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _buildQuickAccessCard(
-                      icon: Icons.search,
-                      iconColor: AppColors.primary,
-                      title: "Book a Session",
-                      subtitle: "Cari tutor berdasarkan nama atau pelajaran",
-                      onTap: () {
-                        Get.toNamed(Routes.SEARCH_TUTOR);
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _buildQuickAccessCard(
-                      icon: Icons.event_note,
-                      iconColor: AppColors.secondary,
-                      title: "My Bookings",
-                      subtitle: "Lihat semua sesi yang kamu pesan",
-                      onTap: () {
-                        Get.snackbar(
-                          "Navigation",
-                          "Navigating to My Bookings",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    _buildQuickAccessCard(
-                      icon: Icons.history,
-                      iconColor: Colors.orange,
-                      title: "Session History",
-                      subtitle: "Lihat riwayat sesi yang sudah lewat",
-                      onTap: () {
-                        Get.snackbar(
-                          "Navigation",
-                          "Navigating to History",
-                          snackPosition: SnackPosition.BOTTOM,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // Recent Activity Section
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-              sliver: SliverToBoxAdapter(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    // Judul tetap tampil
                     Text(
                       "Recent Activity",
                       style: Get.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    _buildActivityItem(
-                      icon: Icons.person,
-                      title: "Session with John Doe",
-                      subtitle: "Mathematics • Tomorrow at 10:00 AM",
-                      time: "2h ago",
-                    ),
-                    const Divider(height: 24),
-                    _buildActivityItem(
-                      icon: Icons.check_circle,
-                      title: "Completed session",
-                      subtitle: "Physics with Sarah Smith",
-                      time: "1d ago",
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                    const SizedBox(height: 18),
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String label,
-    required String value,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+                    if (dashboardController.recentActivities.isEmpty)
+                      Center(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.grey[200]!),
+                          ),
+                          width: double.infinity,
+                          height: 200,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                size: 30,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                "There is no recent activity",
+                                style: Get.textTheme.bodySmall?.copyWith(
+                                  color: AppColors.textLight,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      ...dashboardController.recentActivities.map((activity) {
+                        final tutorName =
+                            activity['tutorName'] ?? 'Unknown Tutor';
+                        final subject = activity['subject'] ?? '-';
+                        final status = activity['status'] ?? 'Session';
+                        final DateTime time = activity['time'];
+                        final formattedTime = FormatterUtils.formatTimeAgo(
+                          time,
+                        );
+
+                        IconData icon;
+                        if (status == 'completed' || status == 'attended') {
+                          icon = Icons.check_circle;
+                        } else if (status == 'confirmed') {
+                          icon = Icons.schedule;
+                        } else {
+                          icon = Icons.info_outline;
+                        }
+
+                        return Column(
+                          children: [
+                            SingleChildScrollView(
+                              child: ActivityCard(
+                                icon: icon,
+                                title: "$status session with $tutorName",
+                                subtitle: "$subject • $formattedTime",
+                                time: formattedTime,
+                              ),
+                            ),
+                            Divider(height: 24, color: Colors.grey),
+                          ],
+                        );
+                      }),
+                  ],
+                );
+              }),
+            ),
           ),
         ],
       ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: color, size: 24),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: Get.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textLight,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey[600]),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickAccessCard({
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return Material(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: iconColor, size: 24),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Get.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: Get.textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(Icons.chevron_right, color: Colors.grey[400]),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActivityItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required String time,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(icon, color: AppColors.primary, size: 20),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: Get.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: Get.textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-        Text(
-          time,
-          style: Get.textTheme.bodySmall?.copyWith(color: Colors.grey[500]),
-        ),
-      ],
     );
   }
 }
