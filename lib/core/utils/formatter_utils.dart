@@ -47,4 +47,35 @@ class FormatterUtils {
         '${DateFormat('HH:mm').format(startLocal)} - ${DateFormat('HH:mm').format(endLocal)}';
     return '$dateString\n$timeString';
   }
+
+  static String formatTimeAgo(DateTime dateTime) {
+    final now = DateTime.now();
+    final diff = now.difference(dateTime);
+
+    if (diff.inMinutes < 1) return "Just now";
+    if (diff.inMinutes < 60) return "${diff.inMinutes}m ago";
+    if (diff.inHours < 24) return "${diff.inHours}h ago";
+    if (diff.inDays < 7) return "${diff.inDays}d ago";
+
+    return "${dateTime.day}/${dateTime.month}/${dateTime.year}";
+  }
+
+  static String getInitials(String name) {
+    List<String> names = name.trim().split(' ');
+    if (names.isEmpty) return 'U';
+    if (names.length == 1) return names[0][0].toUpperCase();
+    return (names[0][0] + names[names.length - 1][0]).toUpperCase();
+  }
+
+  // Helper: Get role name
+  static String getRoleName(String role) {
+    switch (role.toLowerCase()) {
+      case 'parent':
+        return 'Parent';
+      case 'tutor':
+        return 'Tutor';
+      default:
+        return role[0].toUpperCase() + role.substring(1);
+    }
+  }
 }

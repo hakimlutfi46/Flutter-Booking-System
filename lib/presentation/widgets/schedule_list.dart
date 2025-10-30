@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/presentation/tutor_features/avability/controllers/avability.controller.dart';
 import 'package:get/get.dart';
-import 'availability_card.dart';
+import 'card/availability_card.dart';
 import 'empty_state.dart';
 
 class ScheduleList extends GetView<AvabilityController> {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_booking_system/presentation/widgets/booking_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/booking_card.dart';
 import 'package:flutter_booking_system/presentation/widgets/booking_tabbar.dart';
 import 'package:flutter_booking_system/presentation/widgets/empty_bookings.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';

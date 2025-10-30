@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/presentation/tutor_features/avability/controllers/avability.controller.dart';
-import 'package:flutter_booking_system/presentation/widgets/slot_detail_dialog.dart';
+import 'package:flutter_booking_system/presentation/widgets/dialog/slot_detail_dialog.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart'; // Import biasa
 import 'package:flutter_booking_system/core/navigation/routes.dart';
 import 'package:flutter_booking_system/presentation/parent_features/search_tutors/controller/search_tutor.controller.dart';
 import 'package:get/get.dart';
-import 'package:flutter_booking_system/presentation/widgets/info_card.dart';
+import 'package:flutter_booking_system/presentation/widgets/card/info_card.dart';
 import 'package:flutter_booking_system/presentation/widgets/loading_spinner.dart';
 
 class SearchTutorScreen extends GetView<SearchTutorController> {

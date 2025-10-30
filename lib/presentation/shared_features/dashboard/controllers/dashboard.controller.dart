@@ -1,11 +1,10 @@
-import 'dart:async'; // Untuk StreamSubscription
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_booking_system/data/models/tutor_model.dart';
 import 'package:flutter_booking_system/data/models/booking_model.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/presentation/global/auth_controller.dart';
 import 'package:flutter_booking_system/data/models/user_model.dart';
-import 'package:intl/intl.dart';
 
 class DashboardController extends GetxController {
   final AuthController authC = Get.find<AuthController>();
@@ -13,9 +12,8 @@ class DashboardController extends GetxController {
 
   // Stream Subscriptions
   StreamSubscription<DocumentSnapshot>? _tutorSubscription;
-  StreamSubscription<QuerySnapshot>?
-  _todaySessionsSubscription; // Khusus hari ini
-  // Kita tidak perlu stream untuk count mingguan, cukup one-time fetch
+  StreamSubscription<QuerySnapshot>? _todaySessionsSubscription;
+  StreamSubscription<QuerySnapshot>? _parentBookingsSubscription;
 
   // State User & Role
   final Rxn<UserModel> user = Rxn<UserModel>();
@@ -27,7 +25,7 @@ class DashboardController extends GetxController {
   final Rxn<TutorModel> tutorData = Rxn<TutorModel>();
   final RxDouble tutorRating = 0.0.obs;
 
-  // State Statistik
+  // State Statistik Tutor
   final RxInt todayConfirmedSessionsCount = 0.obs;
   final RxInt thisWeekConfirmedSessionsCount = 0.obs;
   final isLoadingStats = false.obs;
@@ -36,19 +34,23 @@ class DashboardController extends GetxController {
   final RxList<BookingModel> todayUpcomingSessions = <BookingModel>[].obs;
   final isLoadingTodaySessions = false.obs;
 
+  // State Statistik Parent
+  final RxInt parentUpcomingCount = 0.obs;
+  final RxInt parentCompletedCount = 0.obs;
+  final isLoadingParentStats = false.obs;
+  final RxList<Map<String, dynamic>> recentActivities =
+      <Map<String, dynamic>>[].obs;
+
   String get userGreetingName =>
       user.value?.name ?? user.value?.email ?? 'Tamu';
 
   @override
   void onInit() {
     super.onInit();
-    // Gunakan listener Rx untuk user agar data tutor/stats di-fetch saat user siap
     ever(authC.firestoreUser, _handleUserReady);
-    // Panggil sekali saat init jika user sudah ada
     _handleUserReady(authC.firestoreUser.value);
   }
 
-  // Fungsi yang dipanggil saat data user (dari AuthController) siap
   void _handleUserReady(UserModel? firestoreUser) {
     user.value = firestoreUser;
     if (user.value != null) {
@@ -56,19 +58,26 @@ class DashboardController extends GetxController {
       isTutor.value = user.value!.role == 'tutor';
 
       if (isTutor.value) {
-        // Panggil fungsi fetch/stream baru
+        // Panggil fungsi fetch Tutor
         listenToTutorData();
-        fetchWeeklyStats(); // Fetch mingguan cukup sekali
-        listenToTodaySessions(); // Stream khusus hari ini
+        fetchWeeklyStats();
+        listenToTodaySessions();
+        resetParentData(); // Pastikan data parent bersih
+      } else if (isParent.value) {
+        // PANGGIL FUNGSI FETCH PARENT
+        listenToParentDashboardData();
+        resetTutorData(); // Pastikan data tutor bersih
       } else {
-        // Jika bukan tutor, pastikan data tutor bersih
+        // Jika bukan keduanya (misal admin)
         _cancelAllSubscriptions();
         resetTutorData();
+        resetParentData();
       }
     } else {
       // Jika user null (logout)
       _cancelAllSubscriptions();
       resetTutorData();
+      resetParentData();
     }
   }
 
@@ -82,11 +91,13 @@ class DashboardController extends GetxController {
   void _cancelAllSubscriptions() {
     _tutorSubscription?.cancel();
     _todaySessionsSubscription?.cancel();
+    _parentBookingsSubscription?.cancel();
     _tutorSubscription = null;
     _todaySessionsSubscription = null;
+    _parentBookingsSubscription = null;
   }
 
-  // Helper untuk mereset data tutor
+  // 5. UPDATE resetTutorData
   void resetTutorData() {
     tutorData.value = null;
     tutorRating.value = 0.0;
@@ -95,6 +106,13 @@ class DashboardController extends GetxController {
     todayUpcomingSessions.clear();
     isLoadingStats.value = false;
     isLoadingTodaySessions.value = false;
+  }
+
+  // 6. BUAT FUNGSI BARU resetParentData
+  void resetParentData() {
+    parentUpcomingCount.value = 0;
+    parentCompletedCount.value = 0;
+    isLoadingParentStats.value = false;
   }
 
   void changeTabIndex(int index) {
@@ -237,6 +255,80 @@ class DashboardController extends GetxController {
           onError: (error) {
             print("Error listening to today sessions: $error");
             isLoadingTodaySessions.value = false;
+          },
+        );
+  }
+
+  void listenToParentDashboardData() {
+    final parentId = user.value?.uid;
+    if (parentId == null) return;
+
+    isLoadingParentStats.value = true;
+    _parentBookingsSubscription?.cancel();
+
+    _parentBookingsSubscription = _firestore
+        .collection('bookings')
+        .where('parentId', isEqualTo: parentId)
+        .where('status', isNotEqualTo: 'cancelled')
+        .orderBy('startUTC', descending: true)
+        .limit(5)
+        .snapshots()
+        .listen(
+          (snapshot) async {
+            final bookings =
+                snapshot.docs
+                    .map((doc) => BookingModel.fromJson(doc.data()))
+                    .toList();
+            final now = DateTime.now();
+
+            // Hitung Statistik
+            parentUpcomingCount.value =
+                bookings
+                    .where(
+                      (b) => b.status == 'confirmed' && b.startUTC.isAfter(now),
+                    )
+                    .length;
+
+            parentCompletedCount.value =
+                bookings
+                    .where(
+                      (b) =>
+                          (b.status == 'completed' || b.status == 'attended') &&
+                          b.endUTC.isBefore(now),
+                    )
+                    .length;
+
+            // 🔹 Ambil detail tutor untuk masing-masing booking
+            List<Map<String, dynamic>> activities = [];
+            for (final booking in bookings) {
+              try {
+                final tutorSnap =
+                    await _firestore
+                        .collection('tutors')
+                        .doc(booking.tutorId)
+                        .get();
+                final tutor =
+                    tutorSnap.exists
+                        ? TutorModel.fromJson(tutorSnap.data()!)
+                        : null;
+
+                activities.add({
+                  'tutorName': tutor?.name ?? 'Unknown Tutor',
+                  'subject': tutor?.subject ?? '-',
+                  'status': booking.status,
+                  'time': booking.startUTC,
+                });
+              } catch (e) {
+                print('Error fetching tutor for booking ${booking.uid}: $e');
+              }
+            }
+
+            recentActivities.assignAll(activities);
+            isLoadingParentStats.value = false;
+          },
+          onError: (error) {
+            print("Error fetching parent stats: $error");
+            isLoadingParentStats.value = false;
           },
         );
   }

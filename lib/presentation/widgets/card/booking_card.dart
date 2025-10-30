@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_booking_system/core/utils/formatter_utils.dart';
 import 'package:flutter_booking_system/core/utils/status_info.dart';
 import 'package:flutter_booking_system/presentation/parent_features/my_bookings/controllers/my_bookings.controller.dart';
-import 'package:flutter_booking_system/presentation/parent_features/my_bookings/views/my_bookings.screen.dart';
 import 'package:get/get.dart';
 import 'package:flutter_booking_system/data/models/booking_model.dart';
 
